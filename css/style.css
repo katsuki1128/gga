@@ -285,6 +285,27 @@ a:hover {
 }
 
 /************************** 
+スタンプ表示エリア
+***************************/
+
+.canvas-wrapper {
+    position: relative;
+    display: inline-block;  // このプロパティは、wrapperがimgの幅に合わせてサイズが変わるようにします
+}
+
+.canvas-wrapper img {
+    display: block;  // これはimg要素の下の余白を削除するためです
+    width: 100%;  // 画像をwrapperの幅に合わせます
+}
+
+#overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
+/************************** 
 スマホ画面 ポイント表示
 ***************************/
 .userPoint {

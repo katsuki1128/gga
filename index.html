@@ -26,10 +26,17 @@
       <div class="w-full bg-white rounded-lg shadow sm:max-w-3xl md:w-4/5 xl:p-0">
         <div class="p-4 space-y-4 md:space-y-6 sm:p-8">
           <div>
-            <img class="w-full h-15 mr-2" src="img/startup_kyushu.png" alt="logo" />
+            <a href="stamp_create.html">
+              <img class="w-full h-15 mr-2" src="img/startup_kyushu.png" alt="logo" />
+            </a>
             <div class="text-base mt-4 mb-0 mr-2 ml-2">
               # スタンプを飛ばして思いをシェア！<br>
               # イベントをどんどん盛り上げよう！<br>
+              <div class="canvas-wrapper">
+                <img src="img/bg.jpeg" alt="Background Image">
+                <canvas id="overlay"></canvas>
+              </div>
+
             </div>
           </div>
         </div>
@@ -38,7 +45,8 @@
   </section>
 
 
-  <!-- ⭐️同時配信イメージ -->
+  <!-- ⭐️スタンプ表示エリア -->
+
 
   <!----------------------------------------------
     ⭐️スタンプ表示エリア  
@@ -127,6 +135,12 @@
     // 🔽 データ取得条件の指定（今回はorder順に並び替えて取得）
     const user_q = query(collection(db, collectionUsernName));
 
+    // クリックされたスタンプのURLを格納する配列
+    let clickStamp = "";
+    const clickStamps = [];
+    const canvas = document.getElementById('overlay');
+    const ctx = canvas.getContext('2d');
+    const stamps = []; // スタンプの情報を保持する配列
     //----------------------------------------
     // ▼最初のスタンプ画像データの読み込み
     //----------------------------------------
@@ -381,12 +395,44 @@
     //   console.log(userPointElement)
     // });
 
-      // console.log("pointData", pointData);
-      // console.log("countData", countData);
-      // console.log(imageUrls);
+    // console.log("pointData", pointData);
+    // console.log("countData", countData);
+    // console.log(imageUrls);
 
     // });
 
+    // 初期サイズ設定
+    updateCanvasSize();
+
+    // ウィンドウのリサイズイベントを監視
+    window.addEventListener('resize', updateCanvasSize);
+
+    // キャンバスサイズをウィンドウの大きさに合わせて設定
+    function updateCanvasSize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      // console.log(canvas.width, canvas.height)
+      // キャンバスの再描画など追加の処理が必要な場合、ここで行うことができます。
+    };
+
+    // データ取得処理(データベース上でデータの変更が発生したタイミングで {} 内の処理を実行)
+    onSnapshot(q, (querySnapshot) => {
+
+      querySnapshot.docChanges().forEach((change) => {
+        if (change.type === "modified") {
+          // console.log("クリックされました");
+          const clickStamp = change.doc.data().img;
+          // clickStamps.push(clickStamp);
+          // console.log("クリックされたスタンプ配列", clickStamps);
+          // console.log("クリックされたスタンプ", clickStamp);
+          // データを取得した後、2秒後にアニメーションを開始する
+          // setTimeout(() => {
+          drawImageOnCanvas(clickStamp);
+          // console.log(clickStamp);
+          // }, 1000);
+        }
+      });
+    });
 
 
   </script>
