@@ -84,7 +84,7 @@ input {
 
 
 /************************** 
-スマホ画面　画像表示
+スマホ画面 画像表示
 ***************************/
 
 .text-container {
@@ -339,6 +339,22 @@ a:hover {
     z-index: 11; /* z-indexを11に設定します */
   }
 
+
+  @keyframes fadeInFromRight {
+    0% {
+      opacity: 0;
+      transform: translateX(20pt);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  .fade-in-from-right {
+    animation: fadeInFromRight 0.5s forwards;
+  }
+  
   /************************** 
 ボタン変化エリア
 ***************************/

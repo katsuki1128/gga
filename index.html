@@ -438,6 +438,24 @@
       orgElement.textContent = person.organization;
       titleElement.textContent = person.title;
       nameElement.textContent = person.name;
+
+      // 画像とテキストのアニメーションをリセット
+      imgElement.classList.remove('fade-in-from-right');
+      orgElement.classList.remove('fade-in-from-right');
+      titleElement.classList.remove('fade-in-from-right');
+      nameElement.classList.remove('fade-in-from-right');
+
+      // リフローをトリガーしてアニメーションを再生
+      void imgElement.offsetWidth;
+      void orgElement.offsetWidth;
+      void titleElement.offsetWidth;
+      void nameElement.offsetWidth;
+
+      // アニメーションクラスを追加
+      imgElement.classList.add('fade-in-from-right');
+      orgElement.classList.add('fade-in-from-right');
+      titleElement.classList.add('fade-in-from-right');
+      nameElement.classList.add('fade-in-from-right');
     };
 
     //----------------------------------------
