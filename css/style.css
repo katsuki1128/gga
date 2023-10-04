@@ -92,10 +92,10 @@ input {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    width: 400px;
+    /* width: 400px; */
 }
 
-.stampContainer:after {
+/* .stampContainer:after {
     content: "";
     width: 90px;
     height: 0px;
@@ -106,7 +106,7 @@ input {
     width: 90px;
     height: 0px;
     order: 1;
-}
+} */
 
 .image-wrapper {
     display: flex;
@@ -117,9 +117,9 @@ input {
 }
 
 .image {
-    width: 70px;
-    height: 70px;
-    margin: 10px 10px 0px 10px;
+    /* width: 70px; */
+    /* height: 70px; */
+    /* margin: 10px 10px 0px 10px; */
     /* フェードインアニメーションを適用 */
     animation-name: fadeInImage;
 
@@ -204,9 +204,9 @@ input {
 
 /* 透明度を指定するためのクラス */
 .never-clickable {
-    width: 70px;
+    /* width: 70px;
     height: 70px;
-    margin: 10px 10px 0px 10px;
+    margin: 10px 10px 0px 10px; */
     opacity: 0.3;
     pointer-events: none;
     transition: opacity 0.5s;

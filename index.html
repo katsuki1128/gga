@@ -8,7 +8,7 @@
   <title>startup_kyushu</title>
 
   <!-- CSS & Tailwind -->
-  <link rel="stylesheet" href="css/reset.css" />
+  <!-- <link rel="stylesheet" href="css/reset.css" /> -->
   <link rel="stylesheet" href="css/style.css" />
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -185,21 +185,27 @@
     //----------------------------------------
 
     const imageElements = [];
+    const margin = 10;
 
-    function renderImages() {
+    const renderImages = () => {
       stampListContainer.innerHTML = '';
+
+      const imageWidth = (window.innerWidth - 5 * margin) / 3;
+      console.log(window.innerWidth, imageWidth);
 
       initialImageUrls.forEach((imageUrl, index) => {
         const imageWrapper = document.createElement('div');
         imageWrapper.className = 'image-wrapper';
+        imageWrapper.style.marginRight = index !== 2 ? `${margin}px` : '0px';
 
         const imageElement = document.createElement('img');
         imageElement.src = imageUrl;
         imageElement.className = 'image';
+        imageElement.style.maxWidth = `${imageWidth}px`;
         imageElements.push(imageElement)
 
-
         imageWrapper.appendChild(imageElement);
+
         const pointElement = document.createElement('div');
         pointElement.textContent = `${initialPointData[index]}`;
         pointElement.className = 'point';
@@ -242,8 +248,7 @@
           targetElement.classList.remove('never-clickable');
         });
       };
-    }
-
+    };
 
     //----------------------------------------
     // ▼ピッチ登壇者ボタンのイベントリスナを設定する
@@ -407,30 +412,16 @@
 
         const stampId = initialArray[index].id; // クリックされたドキュメントのIDを取得
         const userId = initialUserArray[0].id; // arrayUserの最初のドキュメントのIDを取得
-        // console.log(stampId, userId)
-
         stampClick(stampId, userId);
 
         // ボタンが押された時の挙動
         imageElement.classList.add('clicked-image'); // クリックされたら 'clicked-image' クラスを追加
-        // isClickDisabled = true; // クリックを無効化
 
         setTimeout(() => {
           imageElement.classList.remove('clicked-image'); // 一定時間経過後に 'clicked-image' クラスを削除
-          // isClickDisabled = false; // 一定時間後にクリックを再度有効にする
-          // imageElements.forEach((otherImageElement, otherIndex) => {
-          //   if (otherIndex !== index) {
-          //     otherImageElement.style.opacity = '1';
-          //   }
-          // });
         }, 2000);
-
-        // console.log(imageElements[clickedStampIndex]);
-
       });
     });
-
-
 
     //----------------------------------------
     // ▼変更ボタン関数
@@ -448,101 +439,6 @@
       img.src = downloadURL;
       element.appendChild(img);
     };
-
-
-
-    //----------------------------------------
-    // ▼データ取得処理(データベース上でデータの変更が発生したタイミングで {} 内の処理を実行)
-    //----------------------------------------
-
-    // onSnapshot(q, (querySnapshot) => {
-    // const array = [];
-    // querySnapshot.docs.forEach(function (doc) {
-    //   const document = {
-    //     id: doc.id,
-    //     data: doc.data(),
-    //   };
-    //   array.push(document);
-    // });
-
-    // const imageUrls = []; // imageUrlsを初期化しておく
-    // const pointData = []; // pointDataを初期化しておく
-    // const countData = []; // countDataを初期化しておく
-    // const arrayUser = []; // arrayUserを初期化しておく
-    // //----------------------------------------
-    // // id: 'ドキュメントのID',
-    // // data: {
-    // //      img: '画像のURL',
-    // //      point: 'ポイント',
-    // //      count: 'カウント',
-    // //      time: '作成日時など'
-    // // countData : 'カウントの配列',
-    // // imageUrls : '画像のURLの配列'
-    // //----------------------------------------
-
-    // array.forEach(function (document, index) {
-
-    //   // countDataにdocument.data.countを追加
-    //   pointData.push(document.data.point);
-
-    //   // countDataにdocument.data.countを追加
-    //   countData.push(document.data.count);
-
-    //   // imageUrlsにdocument.data.imgを追加
-    //   imageUrls.push(document.data.img);
-
-    // });
-
-    //----------------------------------------
-    // ▼スタンプをクリックしたときにhandlestampClick関数、clickStampPoint関数を呼び出す
-    //----------------------------------------
-    // imageElements.forEach((imageElement, index) => {
-    //   imageElement.addEventListener('click', () => {
-    //     const stampId = array[index].id; // クリックされたドキュメントのIDを取得
-    //     const userId = arrayUser[0].id; // arrayUserの最初のドキュメントのIDを取得
-    //     console.log(stampId, userId)
-
-    //     // stampIdとuserIdを渡して処理を実行する
-    //     stampClick(stampId, userId);
-
-    //     // ボタンが押された時の挙動
-    //     imageElement.classList.add('clicked-image'); // クリックされたら 'clicked-image' クラスを追加
-    //     setTimeout(() => {
-    //       imageElement.classList.remove('clicked-image'); // 一定時間経過後に 'clicked-image' クラスを削除
-    //     }, 300);
-    //   });
-    // });
-
-    // ----------------------------------------
-    //   ▼ユーザーのポイントを更新する関数
-    // ----------------------------------------
-    //   最初にリスナーを変数に格納
-    // onSnapshot(user_q, (querySnapshot) => {
-    //   arrayUser.length = 0; // 配列をクリアして最新のデータを反映
-
-    //   querySnapshot.docs.forEach(function (doc) {
-    //     const document = {
-    //       id: doc.id,
-    //       data: doc.data(),
-    //     };
-    //     arrayUser.push(document);
-    //   });
-
-    //   // console.log("arrayUser", arrayUser)
-    //   // console.log("userHavePoint:", arrayUser[1].data.point);
-
-    //   const userPointElement = document.getElementById('userPoint');
-    //   if (userPointElement) {
-    //     userPointElement.textContent = arrayUser[0].data.point;
-    //   }
-    //   console.log(userPointElement)
-    // });
-
-    // console.log("pointData", pointData);
-    // console.log("countData", countData);
-    // console.log(imageUrls);
-
-    // });
 
     //----------------------------------------
     // ▼canvas背景の画像の大きさを取得する関数
@@ -566,35 +462,14 @@
       canvas.width = canvasImage.width;
       canvas.height = canvasImage.height;
     }
-    // // 初期サイズ設定
-    // updateCanvasSize();
-
-    // // ウィンドウのリサイズイベントを監視
-    // window.addEventListener('resize', updateCanvasSize);
-
-    // // キャンバスサイズをウィンドウの大きさに合わせて設定
-    // function updateCanvasSize() {
-    //   canvas.width = window.innerWidth;
-    //   canvas.height = window.innerHeight;
-    //   // console.log(canvas.width, canvas.height)
-    //   // キャンバスの再描画など追加の処理が必要な場合、ここで行うことができます。
-    // };
 
     // データ取得処理(データベース上でデータの変更が発生したタイミングで {} 内の処理を実行)
     onSnapshot(q, (querySnapshot) => {
-
       querySnapshot.docChanges().forEach((change) => {
         if (change.type === "modified") {
-          // console.log("クリックされました");
           const clickStamp = change.doc.data().img;
-          // clickStamps.push(clickStamp);
-          // console.log("クリックされたスタンプ配列", clickStamps);
-          // console.log("クリックされたスタンプ", clickStamp);
-          // データを取得した後、2秒後にアニメーションを開始する
-          // setTimeout(() => {
           drawImageOnCanvas(clickStamp);
-          // console.log(clickStamp);
-          // }, 1000);
+
         }
       });
     });
@@ -611,10 +486,6 @@
     const maxSize = 200; // 最大サイズ
     let friction = 0.95; // 摩擦係数
     const initialGrowthRate = 2; // 初期の成長率
-
-    //----------------------------------------
-    // ▼摩擦係数
-    //----------------------------------------
 
     //----------------------------------------
     // ▼スタンプ描画関数
