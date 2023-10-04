@@ -40,7 +40,6 @@
                 <img src="img/bg.jpeg" alt="Background Image">
                 <canvas id="overlay"></canvas>
               </div>
-
             </div>
           </div>
         </div>
@@ -48,16 +47,26 @@
     </div>
   </section>
 
-
-  <!-- ⭐️スタンプ表示エリア -->
-
-
   <!----------------------------------------------
     ⭐️スタンプ表示エリア  
     ------------------------------------------------->
   <div id="stampWrapper">
     <div id="stampListContainer" class="stampContainer"></div>
   </div>
+
+  <!----------------------------------------------
+    ⭐️ピッチ登壇者切り替えボタン
+    ------------------------------------------------->
+  <button data-id="1">1</button>
+  <button data-id="2">2</button>
+  <button data-id="3">3</button>
+  <button data-id="4">4</button>
+  <button data-id="5">5</button>
+  <button data-id="6">6</button>
+  <button data-id="7">7</button>
+  <button data-id="8">8</button>
+  <button data-id="9">9</button>
+  <div id="stampSelections"></div>
 
   <!----------------------------------------------
     ⭐️ポイント表示エリア  
@@ -130,7 +139,7 @@
     const db = getFirestore(app);
 
     // コレクションの名前を定義
-    const collectionName = "alterbooth";
+    const collectionName = "startup_kyushu2023";
     const collectionUsernName = "alter-user";
 
     // 🔽 データ取得条件の指定（今回はorder順に並び替えて取得）
@@ -201,7 +210,145 @@
     }
     renderImages();
 
-    console.log("imageElements", imageElements);
+    // console.log("imageElements", imageElements);
+
+    //----------------------------------------
+    // ▼スタンプをクリックできなくする関数
+    //----------------------------------------
+
+    const addNeverClickableClass = (btnId) => {
+      if (!btnId) {
+        btnId = localStorage.getItem("lastClicked");
+      }
+
+      // ローカルストレージから直近に押したボタンとstampSelectionsを取得
+      const index = localStorage.getItem("lastClicked");
+      const storedStates = JSON.parse(localStorage.getItem("stampSelections") || '[]');
+      // console.log(btnId, index);
+
+      if (storedStates[btnId - 1] !== null) {
+        console.log("このスタンプは押せません");
+        const targetElements = document.querySelectorAll('.image');
+
+        targetElements.forEach((targetElement) => {
+          targetElement.classList.add('never-clickable');
+          targetElement.classList.remove('image');
+        });
+      } else if (storedStates[btnId - 1] === null) {
+        const targetElements = document.querySelectorAll('.never-clickable');
+
+        targetElements.forEach((targetElement) => {
+          targetElement.classList.add('image');
+          targetElement.classList.remove('never-clickable');
+        });
+      };
+    }
+
+
+    //----------------------------------------
+    // ▼ピッチ登壇者ボタンのイベントリスナを設定する
+    //----------------------------------------
+    // ボタンを押したらローカルストレージに直近におした番号を保存し、押したボタンをハイライト表示
+    // さらにスタンプを押していたら押せないようにする
+    const initializeButtons = () => {
+      const buttons = document.querySelectorAll("button");
+
+      buttons.forEach((button) => {
+        const btnId = button.getAttribute("data-id");
+        button.addEventListener("click", () => {
+          storeLastClicked(btnId);
+          highlightButton(btnId);
+          addNeverClickableClass(btnId);
+        });
+      });
+    };
+
+    //----------------------------------------
+    // ▼ローカルストレージに直近におした番号を保存
+    //----------------------------------------
+    const storeLastClicked = (btnId) => {
+      if (!btnId) {
+        btnId = localStorage.getItem("lastClicked") || "1";
+      }
+      localStorage.setItem("lastClicked", btnId);
+    };
+
+    //----------------------------------------
+    // ▼押したボタンをハイライト表示
+    //----------------------------------------
+    const highlightButton = (btnId) => {
+      // もしbtnIdが渡されていない場合、LocalStorageから取得
+      if (!btnId) {
+        btnId = localStorage.getItem("lastClicked");
+      }
+
+      const buttons = document.querySelectorAll("button");
+      buttons.forEach((button) => {
+        button.style.background = button.getAttribute("data-id") === btnId ? "lightgray" : "";
+      });
+    }
+
+    //----------------------------------------
+    // ▼ローカルストレージにどのボタン番号でどのスタンプを押したか保存する関数
+    //----------------------------------------
+    const stampButtonClicked = (btnId, stampId) => {
+      const storedStates = JSON.parse(localStorage.getItem("stampSelections") || '[]');
+
+      while (storedStates.length < 9) {
+        storedStates.push(null);
+      }
+
+      storedStates[btnId - 1] = stampId;
+      localStorage.setItem("stampSelections", JSON.stringify(storedStates));
+    };
+
+    //----------------------------------------
+    // ▼作業用の表示関数
+    //----------------------------------------
+    const displayStampSelections = () => {
+      // LocalStorageからstampSelectionsを取得して配列としてパースする
+      const storedStates = JSON.parse(localStorage.getItem("stampSelections") || '[]');
+
+      // 新しいテーブル要素を作成する
+      const table = document.createElement("table");
+      const tbody = document.createElement("tbody");
+
+      storedStates.forEach((item, index) => {
+        const row = document.createElement("tr");
+
+        // Indexのセルを作成して追加
+        const indexCell = document.createElement("td");
+        indexCell.textContent = `${index + 1}:`;
+        row.appendChild(indexCell);
+
+        // 値のセルを作成して追加
+        const valueCell = document.createElement("td");
+        valueCell.textContent = item === null ? "null" : item;
+        row.appendChild(valueCell);
+
+        tbody.appendChild(row);
+      });
+
+      table.appendChild(tbody);
+
+      // <div id="stampSelections"></div>の内容をクリア
+      const container = document.getElementById("stampSelections");
+      container.innerHTML = '';
+
+      // 新しいテーブルを<div id="stampSelections"></div>に追加する
+      container.appendChild(table);
+    };
+    //----------------------------------------
+    // ▼初回読み込み時の挙動
+    //----------------------------------------
+
+    initializeButtons();
+    storeLastClicked();
+    stampButtonClicked();
+    highlightButton();
+    addNeverClickableClass();
+    displayStampSelections();
+
 
     //----------------------------------------
     // ▼最初のユーザーデータ読み込み
@@ -217,15 +364,24 @@
       initialUserArray.push(document);
     });
 
-    console.log("initialUserArray", initialUserArray);
-
     //----------------------------------------
     // ▼スタンプクリック関数、ポイント加算関数
     //----------------------------------------
     const stampClick = async (stampId, userId) => {
 
+      // ローカルストレージから直近に押したボタンとstampSelectionsを取得
+      const btnId = localStorage.getItem("lastClicked");
+      const storedStates = JSON.parse(localStorage.getItem("stampSelections") || '[]');
+
+      // ボタンのイベントリスナを初期化
+      initializeButtons();
+      stampButtonClicked(btnId, stampId);
+      addNeverClickableClass(btnId);
+      displayStampSelections();
+
+      console.log("index", btnId, "クリックID", storedStates[btnId - 1]);
+
       const clickedStamp = await getDoc(doc(db, collectionName, stampId));
-      // console.log(clickedStamp);
 
       // const clickedCount = clickedStamp.data().count //クリックされたスタンプのそれまでのクリック数
       const consumptionPoint = clickedStamp.data().point //クリックされたスタンプの消費ポイント
@@ -239,48 +395,29 @@
       await updateDoc(doc(db, collectionUsernName, userId), {
         point: increment(consumptionPoint)
       });
-      console.log("カウントが正常に更新されましたよ。");
-
     };
 
     //----------------------------------------
     // ▼クリックされたスタンプのIDを取得する関数
     //----------------------------------------
 
-    let isClickDisabled = false; // クリック無効フラグ
-
     // 画像要素にクリックイベントリスナーを追加
     imageElements.forEach((imageElement, index) => {
       imageElement.addEventListener('click', () => {
-
-        // if (isClickDisabled) {
-        //   return; // クリックが無効なら何もしない
-        // };
 
         const stampId = initialArray[index].id; // クリックされたドキュメントのIDを取得
         const userId = initialUserArray[0].id; // arrayUserの最初のドキュメントのIDを取得
         // console.log(stampId, userId)
 
-        // クリックされていないスタンプの透明度を50%に設定
-        // imageElements.forEach((otherImageElement, otherIndex) => {
-        //   if (otherIndex !== index) {
-        //     otherImageElement.style.opacity = '0.3';
-        //   }
-        // });
-
-
-        // setTimeout(() => {
-        // stampIdとuserIdを渡して処理を実行する（1秒後に実行）
         stampClick(stampId, userId);
-        // }, 1000); // 1000ミリ秒（1秒）後に実行
 
         // ボタンが押された時の挙動
         imageElement.classList.add('clicked-image'); // クリックされたら 'clicked-image' クラスを追加
-        isClickDisabled = true; // クリックを無効化
+        // isClickDisabled = true; // クリックを無効化
 
         setTimeout(() => {
           imageElement.classList.remove('clicked-image'); // 一定時間経過後に 'clicked-image' クラスを削除
-          isClickDisabled = false; // 一定時間後にクリックを再度有効にする
+          // isClickDisabled = false; // 一定時間後にクリックを再度有効にする
           // imageElements.forEach((otherImageElement, otherIndex) => {
           //   if (otherIndex !== index) {
           //     otherImageElement.style.opacity = '1';
@@ -292,6 +429,8 @@
 
       });
     });
+
+
 
     //----------------------------------------
     // ▼変更ボタン関数
@@ -515,7 +654,7 @@
           posY = Math.random() * canvas.height / 4 * 3;
         }
 
-        console.log(velocityX)
+        // console.log(velocityX)
         const stampInfo = {
           image: image,
           posX: posX,
@@ -593,6 +732,14 @@
         requestAnimationFrame(animate);
       }
     };
+
+    //----------------------------------------
+    // ▼ダブルクリックされないようにする関数
+    //----------------------------------------
+
+    document.addEventListener('dblclick', function (e) {
+      e.preventDefault();
+    });
 
 
   </script>

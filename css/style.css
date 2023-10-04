@@ -122,7 +122,7 @@ input {
     margin: 10px 10px 0px 10px;
     /* フェードインアニメーションを適用 */
     animation-name: fadeInImage;
-    
+
     /* アニメーションの時間を調整 */
     animation-duration: 0.5s;
     /* タイミング関数を指定 */
@@ -146,8 +146,6 @@ input {
         /* 終了時に完全に表示 */
     }
 }
-
-
 
 .point {
     font-size: 16px;
@@ -204,6 +202,15 @@ input {
     }
 }
 
+/* 透明度を指定するためのクラス */
+.never-clickable {
+    width: 70px;
+    height: 70px;
+    margin: 10px 10px 0px 10px;
+    opacity: 0.3;
+    pointer-events: none;
+    transition: opacity 0.5s;
+}
 
 
 /************************** 
@@ -290,12 +297,12 @@ a:hover {
 
 .canvas-wrapper {
     position: relative;
-    display: inline-block;  // このプロパティは、wrapperがimgの幅に合わせてサイズが変わるようにします
+    display: inline-block;
 }
 
 .canvas-wrapper img {
-    display: block;  // これはimg要素の下の余白を削除するためです
-    width: 100%;  // 画像をwrapperの幅に合わせます
+    display: block;
+    width: 100%;
 }
 
 #overlay {
