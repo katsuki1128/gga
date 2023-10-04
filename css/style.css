@@ -310,6 +310,25 @@ a:hover {
     left: 0;
 }
 
+/************************** 
+ピッチ登壇者ボタン表示エリア
+***************************/
+.btn-container {
+    display: flex;
+    flex-wrap: wrap;  /* ボタンが多い場合に折り返す */
+    z-index: 20;  /* 10より大きい値を設定 */
+    position: relative;  /* z-indexを有効にするためにpositionプロパティを設定 */
+  }
+
+  .btn-container button {
+    font-size: larger;  /* 文字サイズを増やす */
+    margin-right: 5px; /* 右側の余白を追加 */
+  }
+
+  .btn-container button:not(:last-child)::after {
+    content: "|";  /* 最後のボタン以外の後にパイプ文字を追加 */
+    margin-left: 5px; /* 左側の余白を追加 */
+  }
 
 /************************** 
 スマホ画面 ポイント表示
