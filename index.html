@@ -66,10 +66,21 @@
   </div>
 
   <div id="stampSelections"></div>
-
+  <!----------------------------------------------
+    ⭐️ピッチ登壇者表示エリア
+    ------------------------------------------------->
   <div id="personWrapper" style=" z-index: 10;">
     <img style="position: absolute; bottom: 0;" />
   </div>
+
+  <div id="personInfo">
+    <div id="organization"></div>
+    <div id="title"></div>
+    <div id="name"></div>
+  </div>
+
+
+
 
   <!----------------------------------------------
     ⭐️ポイント表示エリア  
@@ -310,7 +321,32 @@
 
       storedStates[btnId - 1] = stampId;
       localStorage.setItem("stampSelections", JSON.stringify(storedStates));
+
+      // スタイルを適用する関数を呼び出す
+      updateButtonStyles();
     };
+
+    //----------------------------------------
+    // ピッチ登壇者ボタンのスタイル
+    //----------------------------------------
+
+    const updateButtonStyles = () => {
+      const storedStates = JSON.parse(localStorage.getItem("stampSelections") || '[]');
+      const buttons = document.querySelectorAll('.btn-container button');
+
+      buttons.forEach((button, index) => {
+        const state = storedStates[index];
+
+        // クラスをリセット
+        button.classList.remove('button-red', 'button-gray');
+
+        if (state === null) {
+          button.classList.add('button-red');
+        } else {
+          button.classList.add('button-gray');
+        }
+      });
+    }
 
     //----------------------------------------
     // ▼作業用の表示関数
@@ -375,7 +411,65 @@
 
       // 画像のsrc属性を更新
       imgElement.src = imgSrc;
+
+      // 関連する情報（団体名、役職、名前）を取得して更新
+      const person = persons[lastClicked - 1]; // 配列は0から始まるため、-1します
+
+      // DOM要素を取得して更新
+      const orgElement = document.getElementById("organization");
+      const titleElement = document.getElementById("title");
+      const nameElement = document.getElementById("name");
+
+      orgElement.textContent = person.organization;
+      titleElement.textContent = person.title;
+      nameElement.textContent = person.name;
     };
+
+    //----------------------------------------
+    // ▼登壇者の情報を表示する
+    //----------------------------------------
+    const persons = [
+      {
+        "organization": "学生アプリ開発団体Divers",
+        "title": "代表",
+        "name": "内山 大輔"
+      },
+      {
+        "organization": "Giga株式会社",
+        "title": "事業担当取締役",
+        "name": "杉山 隆志"
+      },
+      {
+        "organization": "西南学院大学",
+        "title": "学生",
+        "name": "高瀬 朝陽"
+      },
+      {
+        "organization": "SEKIYA.so",
+        "title": "代表",
+        "name": "寺本 聖"
+      },
+      {
+        "organization": "株式会社xCura",
+        "title": "代表取締役",
+        "name": "新嶋 祐一朗"
+      },
+      {
+        "organization": "株式会社Booon",
+        "title": "代表取締役",
+        "name": "橋爪 海"
+      },
+      {
+        "organization": "ひだ福",
+        "title": "代表",
+        "name": "日髙 礼達"
+      },
+      {
+        "organization": "株式会社Mahal.KitaQ",
+        "title": "代表取締役",
+        "name": "宮坂 春花"
+      }
+    ];
 
 
     //----------------------------------------
@@ -391,6 +485,7 @@
     updatePersonWrapperStyle();
     window.addEventListener('resize', updatePersonWrapperStyle);
     updatePersonImage();
+    updateButtonStyles();
 
     //----------------------------------------
     // ▼最初のユーザーデータ読み込み

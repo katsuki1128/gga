@@ -323,12 +323,33 @@ a:hover {
   .btn-container button {
     font-size: larger;  /* 文字サイズを増やす */
     margin-right: 5px; /* 右側の余白を追加 */
+    width: 30px;       /* ボタンの幅を10pxに設定 */
+    height: 30px;      /* ボタンの高さを10pxに設定 */
+    padding: 0;        /* パディングを削除（ボタンの内側の余白） */
+    line-height: 10px; /* テキストの高さをボタンの高さに合わせる */
+    text-align: center;/* テキストをボタンの中央に配置 */
   }
 
-  .btn-container button:not(:last-child)::after {
-    content: "|";  /* 最後のボタン以外の後にパイプ文字を追加 */
-    margin-left: 5px; /* 左側の余白を追加 */
+  #personInfo {
+    position: absolute;
+    bottom: 0; /* 下端をpersonWrapperの下端に合わせます */
+    z-index: 11; /* z-indexを11に設定します */
   }
+
+  /************************** 
+ボタン変化エリア
+***************************/
+  .button-red {
+    background-color: darkred;
+    color: white; 
+  }
+  
+  .button-gray {
+    background-color: gray;
+    color: white;
+  }
+  
+  
 
 /************************** 
 スマホ画面 ポイント表示
