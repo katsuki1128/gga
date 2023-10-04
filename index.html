@@ -21,8 +21,8 @@
   <!----------------------------------------------
     ⭐️タイトル
     ------------------------------------------------->
-  <section class="bg-gray-200">
-    <div class="flex flex-col items-center justify-center px-2 pt-2 pb-2">
+  <section>
+    <div class="flex flex-col items-center justify-center px-2 py-2">
       <div class="canvas-wrapper relative">
         <img src="img/bg.png" class="rounded-lg">
 
@@ -43,58 +43,46 @@
       </div>
     </div>
   </section>
-
   <!----------------------------------------------
     ⭐️スタンプ表示エリア  
     ------------------------------------------------->
-  <div id="stampWrapper">
+
+  <div id="stampWrapper" class="px-2">
     <div id="stampListContainer" class="stampContainer"></div>
   </div>
-
-  <!----------------------------------------------
-    ⭐️ピッチ登壇者切り替えボタン
-    ------------------------------------------------->
-  <!-- <div class="btn-container">
-    <button data-id="1">1</button>
-    <button data-id="2">2</button>
-    <button data-id="3">3</button>
-    <button data-id="4">4</button>
-    <button data-id="5">5</button>
-    <button data-id="6">6</button>
-    <button data-id="7">7</button>
-    <button data-id="8">8</button>
-  </div> -->
-
   <!-- <div id="stampSelections"></div> -->
   <!----------------------------------------------
     ⭐️ピッチ登壇者表示エリア
     ------------------------------------------------->
-  <div id="personWrapper" style=" z-index: 10;">
-    <img style="position: absolute; bottom: 0;" />
-  </div>
+  <div>
+    <div id="personWrapper" style=" z-index: 10;">
+      <img style="position: absolute; bottom: 0;" />
+    </div>
 
-  <div id="personInfo" class="ml-4 mb-4">
-    <div class="mb-4">
-      <div id="organization" class="text-xl"></div>
-      <div id="title"></div>
-      <div id="name" class="text-4xl"></div>
-    </div>
-    <div>
-      <div>
-        speaker select
+    <div id="personInfo" class="ml-4 mb-4">
+      <div class="mb-4">
+        <div id="organization" class="text-xl"></div>
+        <div id="title"></div>
+        <div id="name" class="text-4xl"></div>
       </div>
-      <div class="btn-container">
-        <button data-id="1">1</button>
-        <button data-id="2">2</button>
-        <button data-id="3">3</button>
-        <button data-id="4">4</button>
-        <button data-id="5">5</button>
-        <button data-id="6">6</button>
-        <button data-id="7">7</button>
-        <button data-id="8">8</button>
+      <div>
+        <div>
+          speaker select
+        </div>
+        <div class="btn-container">
+          <button data-id="1">1</button>
+          <button data-id="2">2</button>
+          <button data-id="3">3</button>
+          <button data-id="4">4</button>
+          <button data-id="5">5</button>
+          <button data-id="6">6</button>
+          <button data-id="7">7</button>
+          <button data-id="8">8</button>
+        </div>
       </div>
     </div>
   </div>
+  </section>
 
 
 
