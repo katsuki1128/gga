@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+
   <title>startup_kyushu</title>
 
   <!-- CSS & Tailwind -->
   <!-- <link rel="stylesheet" href="css/reset.css" /> -->
   <link rel="stylesheet" href="css/style.css" />
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- fontAwesome -->
-  <script src="https://kit.fontawesome.com/e6a146d4cb.js" crossorigin="anonymous"></script>
 
 </head>
 
@@ -249,6 +249,8 @@
     }
     renderImages();
     window.addEventListener('resize', renderImages);
+    console.log(window.innerWidth);
+
 
     // console.log("imageElements", imageElements);
 
@@ -415,7 +417,7 @@
       // personWrapper.style.height = `${viewportHeight}px`;
       const topPosition = viewportHeight / 10;
       personWrapper.style.top = `${topPosition}px`; // position:absoluteの要素としてのtop
-      console.log(topPosition)
+      // console.log(topPosition)
     };
 
     const updatePersonImage = () => {
@@ -535,7 +537,7 @@
       addNeverClickableClass(btnId);
       displayStampSelections();
 
-      console.log("index", btnId, "クリックID", storedStates[btnId - 1]);
+      // console.log("index", btnId, "クリックID", storedStates[btnId - 1]);
 
       const clickedStamp = await getDoc(doc(db, collectionName, stampId));
 

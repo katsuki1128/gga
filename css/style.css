@@ -1,3 +1,8 @@
+::-webkit-scrollbar {
+    /* スクロールバー外し */
+    display: none;
+}
+
 body {
     height: auto;
     background-repeat: no-repeat;
