@@ -65,8 +65,8 @@
   <button data-id="9">9</button>
   <div id="stampSelections"></div>
 
-  <div id="personWrapper" style="position: relative;">
-    <img src="img/05.png" style="position: absolute; bottom: 0;" />
+  <div id="personWrapper" style=" z-index: 10;">
+    <img src="img/08.png" style="position: absolute; bottom: 0;" />
   </div>
 
   <!----------------------------------------------
@@ -192,7 +192,7 @@
       stampListContainer.innerHTML = '';
 
       const imageWidth = (window.innerWidth - 5 * margin) / 3;
-      console.log(window.innerWidth, imageWidth);
+      // console.log(window.innerWidth, imageWidth);
 
       initialImageUrls.forEach((imageUrl, index) => {
         const imageWrapper = document.createElement('div');
@@ -235,7 +235,7 @@
       // console.log(btnId, index);
 
       if (storedStates[btnId - 1] !== null) {
-        console.log("このスタンプは押せません");
+        // console.log("このスタンプは押せません");
         const targetElements = document.querySelectorAll('.image');
 
         targetElements.forEach((targetElement) => {
@@ -360,10 +360,22 @@
     // ▼登壇者の画像を表示する
     //----------------------------------------
 
-    const viewportHeight = window.innerHeight;
-    console.log(viewportHeight);
-    const personWrapper = document.getElementById('personWrapper');
-    personWrapper.style.height = viewportHeight + 'px';
+    // アロー関数で定義
+    const updatePersonWrapperStyle = () => {
+      const viewportHeight = window.innerHeight;
+      const personWrapper = document.getElementById('personWrapper');
+      personWrapper.style.height = `${viewportHeight}px`;
+      const topPosition = viewportHeight / 10;
+      personWrapper.style.top = `${topPosition}px`; // position:absoluteの要素としてのtop
+      console.log(topPosition)
+    };
+
+    // 初回実行
+    updatePersonWrapperStyle();
+
+    // ウィンドウがリサイズされたときにスタイルを更新
+    window.addEventListener('resize', updatePersonWrapperStyle);
+
 
     //----------------------------------------
     // ▼最初のユーザーデータ読み込み
