@@ -339,13 +339,13 @@ a:hover {
   /************************** 
 ボタン変化エリア
 ***************************/
-  .button-red {
-    background-color: #ffa94d;
+  .button-black {
+    background-color: black;
     color: white; 
   }
   
   .button-gray {
-    background-color: #c8c8c8;
+    background-color: ;
     color: white;
   }
   

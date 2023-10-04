@@ -357,10 +357,10 @@
         const state = storedStates[index];
 
         // クラスをリセット
-        button.classList.remove('button-red', 'button-gray');
+        button.classList.remove('button-black', 'button-gray');
 
         if (state === null) {
-          button.classList.add('button-red');
+          button.classList.add('button-black');
         } else {
           button.classList.add('button-gray');
         }
@@ -412,7 +412,7 @@
     const updatePersonWrapperStyle = () => {
       const viewportHeight = window.innerHeight;
       const personWrapper = document.getElementById('personWrapper');
-      personWrapper.style.height = `${viewportHeight}px`;
+      // personWrapper.style.height = `${viewportHeight}px`;
       const topPosition = viewportHeight / 10;
       personWrapper.style.top = `${topPosition}px`; // position:absoluteの要素としてのtop
       console.log(topPosition)
