@@ -63,10 +63,10 @@
   <button data-id="7">7</button>
   <button data-id="8">8</button>
   <button data-id="9">9</button>
-  <!-- <div id="stampSelections"></div> -->
+  <div id="stampSelections"></div>
 
-  <div style="position: relative; height: 100vh;">
-    <img src="img/08.png" style="position: absolute; bottom: 0;" />
+  <div id="personWrapper" style="position: relative;">
+    <img src="img/05.png" style="position: absolute; bottom: 0;" />
   </div>
 
   <!----------------------------------------------
@@ -356,6 +356,14 @@
     addNeverClickableClass();
     displayStampSelections();
 
+    //----------------------------------------
+    // ▼登壇者の画像を表示する
+    //----------------------------------------
+
+    const viewportHeight = window.innerHeight;
+    console.log(viewportHeight);
+    const personWrapper = document.getElementById('personWrapper');
+    personWrapper.style.height = viewportHeight + 'px';
 
     //----------------------------------------
     // ▼最初のユーザーデータ読み込み
