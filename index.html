@@ -32,11 +32,11 @@
 
         <canvas id="overlay"></canvas>
 
-        <div class="absolute bottom-2 left-4">
-          <div class="text-lg font-bold m-0 text-white overflow-hidden whitespace-nowrap truncate">
+        <div class="absolute bottom-2 left-4 text-container">
+          <div class="text-lg font-bold m-0 text-white truncate">
             みんなで押してピッチを応援しよう！
           </div>
-          <div class="text-sm m-0 text-white overflow-hidden whitespace-nowrap truncate">
+          <div class="text-sm m-0 text-white truncate">
             ピッチ終了後、気になる登壇者へお気軽にお声がけください♪
           </div>
         </div>
@@ -199,7 +199,7 @@
       // imageUrlsにdocument.data.imgを追加
       initialImageUrls.push(document.data.img);
     });
-    // console.log("initialArray", initialArray.length, "initialImageUrls", initialImageUrls, "initialPointData", initialPointData);
+
 
     const stampListContainer = document.getElementById('stampListContainer');
 
@@ -214,7 +214,7 @@
       stampListContainer.innerHTML = '';
 
       // const imageWidth = (window.innerWidth - 5 * margin) / 3;
-      // console.log(window.innerWidth, imageWidth);
+
       const imageWidth = (window.innerWidth - 16 - (2 * margin)) / 3;  // 画像の間のマージンを2回分除外
 
       initialImageUrls.forEach((imageUrl, index) => {
@@ -240,10 +240,7 @@
     }
     renderImages();
     window.addEventListener('resize', renderImages);
-    console.log(window.innerWidth);
 
-
-    // console.log("imageElements", imageElements);
 
     //----------------------------------------
     // ▼スタンプをクリックできなくする関数
@@ -257,10 +254,9 @@
       // ローカルストレージから直近に押したボタンとstampSelectionsを取得
       const index = localStorage.getItem("lastClicked");
       const storedStates = JSON.parse(localStorage.getItem("stampSelections") || '[]');
-      // console.log(btnId, index);
 
       if (storedStates[btnId - 1] !== null) {
-        // console.log("このスタンプは押せません");
+
         const targetElements = document.querySelectorAll('.image');
 
         targetElements.forEach((targetElement) => {
@@ -408,7 +404,7 @@
       // personWrapper.style.height = `${viewportHeight}px`;
       // const topPosition = viewportHeight / 10;
       // personWrapper.style.top = `${topPosition}px`; // position:absoluteの要素としてのtop
-      // console.log(topPosition)
+
     };
 
     const updatePersonImage = () => {
@@ -535,7 +531,7 @@
       addNeverClickableClass(btnId);
       displayStampSelections();
 
-      // console.log("index", btnId, "クリックID", storedStates[btnId - 1]);
+
 
       const clickedStamp = await getDoc(doc(db, collectionName, stampId));
 
@@ -676,7 +672,7 @@
           posY = Math.random() * canvas.height / 4 * 3;
         }
 
-        // console.log(velocityX)
+
         const stampInfo = {
           image: image,
           posX: posX,
@@ -688,7 +684,7 @@
           isAnimating: true,
         };
         stamps.push(stampInfo);
-        // console.log(stamps)
+
 
         // アニメーションを開始
         if (!isAnimationRunning) {
@@ -715,7 +711,7 @@
         if (stamp.isAnimating) {
           stamp.velocityX *= friction; // 摩擦を適用
           stamp.velocityY *= friction; // 摩擦を適用
-          // console.log("読み込み")
+
           // 位置を更新
           stamp.posX += stamp.velocityX; // 速度による位置の変化
           stamp.posY += stamp.velocityY; // 速度による位置の変化
@@ -743,8 +739,7 @@
           if (stamp.alpha <= 0 || stamp.size > 200) {
             stamp.alpha = 0; // 透明度が-10のままキープする
             // stamps.shift(); // 配列の先頭から削除
-            // console.log(stamp.size, stamp.alpha)
-            // console.log("配列の先頭から削除しました", stamps);
+
 
             stamp.isAnimating = false;
           };
