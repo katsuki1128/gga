@@ -62,10 +62,10 @@
   <button data-id="6">6</button>
   <button data-id="7">7</button>
   <button data-id="8">8</button>
-  <button data-id="9">9</button>
+
   <div id="stampSelections"></div>
 
-  <div id="personWrapper" style=" z-index: 10;">
+  <div id="personWrapper" style=" z-index: -10;">
     <img src="img/08.png" style="position: absolute; bottom: 0;" />
   </div>
 
@@ -278,6 +278,7 @@
         btnId = localStorage.getItem("lastClicked") || "1";
       }
       localStorage.setItem("lastClicked", btnId);
+      updatePersonImage();
     };
 
     //----------------------------------------
@@ -301,7 +302,7 @@
     const stampButtonClicked = (btnId, stampId) => {
       const storedStates = JSON.parse(localStorage.getItem("stampSelections") || '[]');
 
-      while (storedStates.length < 9) {
+      while (storedStates.length < 8) {
         storedStates.push(null);
       }
 
@@ -345,16 +346,6 @@
       // 新しいテーブルを<div id="stampSelections"></div>に追加する
       container.appendChild(table);
     };
-    //----------------------------------------
-    // ▼初回読み込み時の挙動
-    //----------------------------------------
-
-    initializeButtons();
-    storeLastClicked();
-    stampButtonClicked();
-    highlightButton();
-    addNeverClickableClass();
-    displayStampSelections();
 
     //----------------------------------------
     // ▼登壇者の画像を表示する
@@ -370,12 +361,34 @@
       console.log(topPosition)
     };
 
-    // 初回実行
+    const updatePersonImage = () => {
+      const personWrapper = document.getElementById('personWrapper');
+      const imgElement = personWrapper.querySelector('img');
+
+      // localStorageからlastClickedの値を取得
+      const lastClicked = localStorage.getItem("lastClicked") || "1";
+
+      // lastClickedの値に基づいて画像のファイル名を動的に生成
+      const imgSrc = `img/${lastClicked.padStart(2, '0')}.png`;
+
+      // 画像のsrc属性を更新
+      imgElement.src = imgSrc;
+    };
+
+
+    //----------------------------------------
+    // ▼初回読み込み時の挙動
+    //----------------------------------------
+
+    initializeButtons();
+    storeLastClicked();
+    stampButtonClicked();
+    highlightButton();
+    addNeverClickableClass();
+    displayStampSelections();
     updatePersonWrapperStyle();
-
-    // ウィンドウがリサイズされたときにスタイルを更新
     window.addEventListener('resize', updatePersonWrapperStyle);
-
+    updatePersonImage();
 
     //----------------------------------------
     // ▼最初のユーザーデータ読み込み
