@@ -1,5 +1,4 @@
 body {
-
     height: auto;
     background-repeat: no-repeat;
     text-size-adjust: 100%;
@@ -302,7 +301,7 @@ a:hover {
 
 .canvas-wrapper img {
     display: block;
-    width: 100%;
+    /* width: 100%; */
 }
 
 #overlay {
