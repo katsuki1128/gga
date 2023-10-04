@@ -412,11 +412,11 @@
 
     // アロー関数で定義
     const updatePersonWrapperStyle = () => {
-      const viewportHeight = window.innerHeight;
+      // const viewportHeight = window.innerHeight;
       const personWrapper = document.getElementById('personWrapper');
       // personWrapper.style.height = `${viewportHeight}px`;
-      const topPosition = viewportHeight / 10;
-      personWrapper.style.top = `${topPosition}px`; // position:absoluteの要素としてのtop
+      // const topPosition = viewportHeight / 10;
+      // personWrapper.style.top = `${topPosition}px`; // position:absoluteの要素としてのtop
       // console.log(topPosition)
     };
 
@@ -432,6 +432,13 @@
 
       // 画像のsrc属性を更新
       imgElement.src = imgSrc;
+
+      // 画像のサイズを変更
+      imgElement.style.width = '80%';  // 例: 元のサイズの80%にする
+
+      // 画像をデバイスの右端に接するようにする
+      imgElement.style.position = 'absolute';
+      imgElement.style.right = '0';
 
       // 関連する情報（団体名、役職、名前）を取得して更新
       const person = persons[lastClicked - 1]; // 配列は0から始まるため、-1します
