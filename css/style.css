@@ -326,8 +326,8 @@ a:hover {
     width: 30px;       /* ボタンの幅を10pxに設定 */
     height: 30px;      /* ボタンの高さを10pxに設定 */
     padding: 0;        /* パディングを削除（ボタンの内側の余白） */
-    line-height: 10px; /* テキストの高さをボタンの高さに合わせる */
     text-align: center;/* テキストをボタンの中央に配置 */
+    border-radius: 5px; /* 角丸の半径を5pxに設定 */
   }
 
   #personInfo {
@@ -340,15 +340,14 @@ a:hover {
 ボタン変化エリア
 ***************************/
   .button-red {
-    background-color: darkred;
+    background-color: #ffa94d;
     color: white; 
   }
   
   .button-gray {
-    background-color: gray;
+    background-color: #c8c8c8;
     color: white;
   }
-  
   
 
 /************************** 

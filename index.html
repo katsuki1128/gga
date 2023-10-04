@@ -54,7 +54,7 @@
   <!----------------------------------------------
     ⭐️ピッチ登壇者切り替えボタン
     ------------------------------------------------->
-  <div class="btn-container">
+  <!-- <div class="btn-container">
     <button data-id="1">1</button>
     <button data-id="2">2</button>
     <button data-id="3">3</button>
@@ -63,9 +63,9 @@
     <button data-id="6">6</button>
     <button data-id="7">7</button>
     <button data-id="8">8</button>
-  </div>
+  </div> -->
 
-  <div id="stampSelections"></div>
+  <!-- <div id="stampSelections"></div> -->
   <!----------------------------------------------
     ⭐️ピッチ登壇者表示エリア
     ------------------------------------------------->
@@ -73,11 +73,30 @@
     <img style="position: absolute; bottom: 0;" />
   </div>
 
-  <div id="personInfo">
-    <div id="organization"></div>
-    <div id="title"></div>
-    <div id="name"></div>
+  <div id="personInfo" class="ml-4 mb-4">
+    <div class="mb-4">
+      <div id="organization" class="text-xl"></div>
+      <div id="title"></div>
+      <div id="name" class="text-4xl"></div>
+    </div>
+    <div>
+      <div>
+        speaker select
+      </div>
+      <div class="btn-container">
+        <button data-id="1">1</button>
+        <button data-id="2">2</button>
+        <button data-id="3">3</button>
+        <button data-id="4">4</button>
+        <button data-id="5">5</button>
+        <button data-id="6">6</button>
+        <button data-id="7">7</button>
+        <button data-id="8">8</button>
+      </div>
+    </div>
   </div>
+
+
 
 
 
@@ -301,11 +320,11 @@
       // もしbtnIdが渡されていない場合、LocalStorageから取得
       if (!btnId) {
         btnId = localStorage.getItem("lastClicked");
-      }
+      };
 
       const buttons = document.querySelectorAll("button");
       buttons.forEach((button) => {
-        button.style.background = button.getAttribute("data-id") === btnId ? "lightgray" : "";
+        button.style.background = button.getAttribute("data-id") === btnId ? "#9c1500" : "";
       });
     }
 
@@ -378,11 +397,11 @@
       table.appendChild(tbody);
 
       // <div id="stampSelections"></div>の内容をクリア
-      const container = document.getElementById("stampSelections");
-      container.innerHTML = '';
+      // const container = document.getElementById("stampSelections");
+      // container.innerHTML = '';
 
       // 新しいテーブルを<div id="stampSelections"></div>に追加する
-      container.appendChild(table);
+      // container.appendChild(table);
     };
 
     //----------------------------------------
