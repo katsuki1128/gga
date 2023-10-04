@@ -85,10 +85,12 @@
   </section>
 
 
-
-
-
-
+  <!----------------------------------------------
+    ⭐️ピッチ登壇者表示エリア
+    ------------------------------------------------->
+  <div class="circle">
+    <p class="heart">❤︎</p>
+  </div>
   <!----------------------------------------------
     ⭐️ポイント表示エリア  
     ------------------------------------------------->
@@ -206,18 +208,19 @@
     //----------------------------------------
 
     const imageElements = [];
-    const margin = 10;
+    const margin = 8;
 
     const renderImages = () => {
       stampListContainer.innerHTML = '';
 
-      const imageWidth = (window.innerWidth - 5 * margin) / 3;
+      // const imageWidth = (window.innerWidth - 5 * margin) / 3;
       // console.log(window.innerWidth, imageWidth);
+      const imageWidth = (window.innerWidth - 16 - (2 * margin)) / 3;  // 画像の間のマージンを2回分除外
 
       initialImageUrls.forEach((imageUrl, index) => {
         const imageWrapper = document.createElement('div');
         imageWrapper.className = 'image-wrapper';
-        imageWrapper.style.marginRight = index !== 2 ? `${margin}px` : '0px';
+        // imageWrapper.style.marginRight = index !== 2 ? `${margin}px` : '0px';
 
         const imageElement = document.createElement('img');
         imageElement.src = imageUrl;
@@ -227,10 +230,10 @@
 
         imageWrapper.appendChild(imageElement);
 
-        const pointElement = document.createElement('div');
-        pointElement.textContent = `${initialPointData[index]}`;
-        pointElement.className = 'point';
-        imageWrapper.appendChild(pointElement);
+        // const pointElement = document.createElement('div');
+        // pointElement.textContent = `${initialPointData[index]}`;
+        // pointElement.className = 'point';
+        // imageWrapper.appendChild(pointElement);
 
         stampListContainer.appendChild(imageWrapper);
       });

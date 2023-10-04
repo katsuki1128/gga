@@ -97,21 +97,8 @@ input {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    /* width: 400px; */
+    width: 100%;
 }
-
-/* .stampContainer:after {
-    content: "";
-    width: 90px;
-    height: 0px;
-}
-
-.stampContainer:before {
-    content: "";
-    width: 90px;
-    height: 0px;
-    order: 1;
-} */
 
 .image-wrapper {
     display: flex;
@@ -126,6 +113,8 @@ input {
     /* height: 70px; */
     /* margin: 10px 10px 0px 10px; */
     /* フェードインアニメーションを適用 */
+
+    border-radius: 8px; /* この行を追加 */
     animation-name: fadeInImage;
 
     /* アニメーションの時間を調整 */
@@ -216,7 +205,6 @@ input {
     pointer-events: none;
     transition: opacity 0.5s;
 }
-
 
 /************************** 
 登録スタンプ更新エリア
@@ -329,8 +317,8 @@ a:hover {
   .btn-container button {
     font-size: larger;  /* 文字サイズを増やす */
     margin-right: 5px; /* 右側の余白を追加 */
-    width: 30px;       /* ボタンの幅を10pxに設定 */
-    height: 30px;      /* ボタンの高さを10pxに設定 */
+    width: 32px;       /* ボタンの幅を10pxに設定 */
+    height: 32px;      /* ボタンの高さを10pxに設定 */
     padding: 0;        /* パディングを削除（ボタンの内側の余白） */
     text-align: center;/* テキストをボタンの中央に配置 */
     border-radius: 5px; /* 角丸の半径を5pxに設定 */
@@ -363,3 +351,28 @@ a:hover {
     display: inline-block;
     /* 要素を横並びに表示 */
 }
+
+/************************** 
+ハートマーク
+***************************/
+
+.circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed; /* または position: absolute; にすると、親要素を基準に位置が固定されます */
+    right: 16px; /* 右からの位置 */
+    bottom: 16px; /* 下からの位置 */
+    border: 2px solid black; 
+  }
+  
+  .heart {
+    margin: 0;
+    font-size: 20px;
+  }
+  
+  
