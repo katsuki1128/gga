@@ -29,9 +29,13 @@
             <a href="stamp_create.html">
               <img class="w-full h-15 mr-2" src="img/startup_kyushu.png" alt="logo" />
             </a>
-            <div class="text-base mt-4 mb-0 mr-2 ml-2">
-              # スタンプを飛ばして思いをシェア！<br>
-              # イベントをどんどん盛り上げよう！<br>
+            <div>
+              <div class="text-lg font-bold m-2">
+                # みんなで押してピッチを応援しよう！
+              </div>
+              <div class="text-sm m-2">
+                # ピッチ終了後、気になる登壇者へお気軽にお声がけください♪
+              </div>
               <div class="canvas-wrapper">
                 <img src="img/bg.jpeg" alt="Background Image">
                 <canvas id="overlay"></canvas>
@@ -401,19 +405,41 @@
 
     // });
 
-    // 初期サイズ設定
-    updateCanvasSize();
+    //----------------------------------------
+    // ▼canvas背景の画像の大きさを取得する関数
+    //----------------------------------------
+    let canvasImage = document.querySelector('.canvas-wrapper img');
 
-    // ウィンドウのリサイズイベントを監視
-    window.addEventListener('resize', updateCanvasSize);
+    // 画像が読み込まれたら、キャンバスのサイズを設定する
+    canvasImage.addEventListener('load', function () {
+      canvas.width = canvasImage.width;
+      canvas.height = canvasImage.height;
+    });
 
-    // キャンバスサイズをウィンドウの大きさに合わせて設定
-    function updateCanvasSize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      // console.log(canvas.width, canvas.height)
-      // キャンバスの再描画など追加の処理が必要な場合、ここで行うことができます。
-    };
+    // ウィンドウがリサイズされたときも、キャンバスのサイズを再設定する
+    window.addEventListener('resize', function () {
+      canvas.width = canvasImage.width;
+      canvas.height = canvasImage.height;
+    });
+
+    // 画像がすでに読み込まれている場合の対処
+    if (canvasImage.complete) {
+      canvas.width = canvasImage.width;
+      canvas.height = canvasImage.height;
+    }
+    // // 初期サイズ設定
+    // updateCanvasSize();
+
+    // // ウィンドウのリサイズイベントを監視
+    // window.addEventListener('resize', updateCanvasSize);
+
+    // // キャンバスサイズをウィンドウの大きさに合わせて設定
+    // function updateCanvasSize() {
+    //   canvas.width = window.innerWidth;
+    //   canvas.height = window.innerHeight;
+    //   // console.log(canvas.width, canvas.height)
+    //   // キャンバスの再描画など追加の処理が必要な場合、ここで行うことができます。
+    // };
 
     // データ取得処理(データベース上でデータの変更が発生したタイミングで {} 内の処理を実行)
     onSnapshot(q, (querySnapshot) => {
@@ -443,7 +469,7 @@
     // const targetX = canvas.width / 2 + (Math.random() - 0.5) * 2 * canvas.width / 40;  // 画面中央のX座標を基点にランダムな値を加える
 
     const targetY = (canvas.height) / 2; // 画面中央のY座標
-    const maxSize = 500; // 最大サイズ
+    const maxSize = 200; // 最大サイズ
     let friction = 0.95; // 摩擦係数
     const initialGrowthRate = 2; // 初期の成長率
 
@@ -471,10 +497,9 @@
           posX = 0;
           // velocityX = 10;
 
-          const velocities = [10, 20, 40, 60, 0];
+          const velocities = [1, 2, 4, 6, 0];
           const randomIndex = Math.floor(Math.random() * velocities.length);
           velocityX = velocities[randomIndex];
-
 
           posY = Math.random() * canvas.height / 4 * 3;
         }
@@ -482,11 +507,10 @@
           posX = canvas.width;
           // ランダムな速度を設定
 
-          const velocities = [-30, -50, -70, -90, -110];
+          const velocities = [-3, -5, -7, -9, -11];
           const randomIndex = Math.floor(Math.random() * velocities.length);
           velocityX = velocities[randomIndex];
           // velocityX = -45;
-
 
           posY = Math.random() * canvas.height / 4 * 3;
         }
@@ -540,9 +564,9 @@
           const growthRate = initialGrowthRate * (1 + distanceToTarget / canvas.width); // 距離に応じて成長率を調整
 
           // サイズを更新
-          if (stamp.size < 450) {
+          if (stamp.size < 150) {
             stamp.size += growthRate; // 成長率によるサイズの増加
-          } else if (stamp.size >= 450 && stamp.size < maxSize) {
+          } else if (stamp.size >= 150 && stamp.size < maxSize) {
             stamp.size += growthRate; // 400から500の間も成長を続ける
             stamp.alpha -= 0.05; // 透明度を下げる
           }
@@ -555,7 +579,7 @@
           // スタンプの中央座標を中心に描画
           ctx.drawImage(stamp.image, centerX - stamp.size / 2, centerY - stamp.size / 2, stamp.size, stamp.size);
 
-          if (stamp.alpha <= 0 || stamp.size > 500) {
+          if (stamp.alpha <= 0 || stamp.size > 200) {
             stamp.alpha = 0; // 透明度が-10のままキープする
             // stamps.shift(); // 配列の先頭から削除
             // console.log(stamp.size, stamp.alpha)
