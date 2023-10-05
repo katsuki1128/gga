@@ -280,6 +280,7 @@ a:hover {
 ***************************/
 .stamp-container {
     position: relative; 
+    z-index: 50;
 }
 
 @keyframes fadeIn {
