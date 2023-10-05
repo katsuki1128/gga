@@ -320,6 +320,25 @@
     };
 
     //----------------------------------------
+    // ▼スタンプを横からスライドインする関数
+    //----------------------------------------
+    const fadeInFromRightAnimation = () => {
+      // 既存の要素を取得
+      const stampContainers = document.querySelectorAll(".stamp-container");
+
+      stampContainers.forEach(container => {
+        // アニメーションクラスを削除してリセット
+        container.classList.remove('fade-in-from-right');
+
+        // リフローをトリガー
+        void container.offsetWidth;
+
+        // アニメーションクラスを追加
+        container.classList.add('fade-in-from-right');
+      });
+    }
+
+    //----------------------------------------
     // ▼ピッチ登壇者ボタンのイベントリスナを設定する
     //----------------------------------------
     // ボタンを押したらローカルストレージに直近におした番号を保存し、押したボタンをハイライト表示
@@ -335,6 +354,7 @@
           highlightButton(btnId);
           addNeverClickableClass(btnId);
           updateClickCounts();
+          fadeInFromRightAnimation();
         });
       });
     };

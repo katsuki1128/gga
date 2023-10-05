@@ -266,9 +266,6 @@ td img {
     /* 奇数行の背景色を設定 */
 }
 
-
-
-
 /************************** 
 スマホ画面 ロゴ、説明エリア
 ***************************/
@@ -285,6 +282,15 @@ a:hover {
     position: relative; 
 }
 
+@keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
 .stamp-click-count {
     position: absolute; 
     top: -0.5rem; 
@@ -298,7 +304,9 @@ a:hover {
     justify-content: center;
     align-items: center;
     font-size: 1rem; 
+    animation: fadeIn 0.5s forwards;
 }
+  
 
 /************************** 
 スタンプ表示エリア
@@ -379,8 +387,8 @@ a:hover {
 ***************************/
 
 .circle {
-    width: 60px;
-    height: 60px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     background-color: #eee;
     display: flex;
@@ -399,7 +407,7 @@ a:hover {
     align-items: center;
     justify-content: center;
     position: fixed; /* または position: absolute; にすると、親要素を基準に位置が固定されます */
-    right: 16px; /* 右からの位置 */
+    right: 18px; /* 右からの位置 */
     bottom: 16px; /* 下からの位置 */
     transition: opacity 0.5s;
   }
