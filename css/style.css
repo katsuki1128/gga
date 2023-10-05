@@ -339,7 +339,6 @@ a:hover {
     z-index: 11; /* z-indexを11に設定します */
   }
 
-
   @keyframes fadeInFromRight {
     0% {
       opacity: 0;
@@ -364,7 +363,7 @@ a:hover {
   }
   
   .button-gray {
-    background-color: ;
+    background-color: #d9d9d9;
     color: white;
   }
   
@@ -382,8 +381,8 @@ a:hover {
 ***************************/
 
 .circle {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     background-color: #eee;
     display: flex;
