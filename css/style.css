@@ -395,8 +395,14 @@ a:hover {
   }
   
   .heart {
-    margin: 0;
-    font-size: 20px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed; /* または position: absolute; にすると、親要素を基準に位置が固定されます */
+    right: 16px; /* 右からの位置 */
+    bottom: 16px; /* 下からの位置 */
   }
   
   

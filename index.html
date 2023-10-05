@@ -88,8 +88,11 @@
   <!----------------------------------------------
     ⭐️ピッチ登壇者表示エリア
     ------------------------------------------------->
-  <div class="circle">
-    <p class="heart">❤︎</p>
+  <!-- <div class="circle"> -->
+  <div>
+    <!-- <p class="heart">❤︎</p> -->
+    <img src="img/heart2.png" class="heart" />
+    <!-- </div> -->
   </div>
   <!----------------------------------------------
     ⭐️ポイント表示エリア  
@@ -162,6 +165,7 @@
     const db = getFirestore(app);
 
     // コレクションの名前を定義
+    // const collectionName = "startup_kyushu2023";
     const collectionName = "startup_kyushu2023";
     const collectionUsernName = "alter-user";
 
@@ -190,6 +194,7 @@
       };
       initialArray.push(document);
     });
+
     const initialImageUrls = []; // imageUrlsを初期化しておく
     const initialPointData = []; // pointDataを初期化しておく
 
@@ -204,6 +209,21 @@
     const stampListContainer = document.getElementById('stampListContainer');
 
     //----------------------------------------
+    // ▼lastClickedの値に基づいて、表示するドキュメントIDを決定するためのJSON
+    //----------------------------------------
+    const displayMapping = {
+      "1": ["jealtUQHv1QQrNcAiwuq", "qpc0uA78IuoDvbghk9mB", "cwXYkq3piAbvAhDn1Xjs"],
+      "2": ["Zlt5ZxigZOrmxnuKiUbQ", "scGcrWzRYTxyWFvSvmRN", "6zYKOcDVNpyfXmVxCvKl"],
+      "3": ["efSL8QRl9vKg0WqVc5hS", "eTCk6wN3Ftygfx8VUuWv", "IziClSdR2AhlXWE0O3tp"],
+      "4": ["yUehqeFwYsudM0HWYsZT", "QflvlNPABNHewYLZ3X4l", "GMraxjKm9snDEnXb8x6V"],
+      "5": ["dw7TwBDHqb3iDyjHLQ7O", "8xkbKXJhEkDv0zXeDHns", "fAtESPKJcNQjhFn1KRXx"],
+      "6": ["9f1q1uZZdzVE7bBNXKAv", "0WWAnyU83WamPOeQPe8B", "GnkpqkuFdwUHQbxY3PPV"],
+      "7": ["7ZS4syokyxCNEGIfjRBU", "yfIPjgcYpm5PH30XfzgN", "i4CrW55ohJ9CWaaa0OED"],
+      "8": ["r1Jl2b6z8pTyTjybp3rH", "A9W8CHH0jETzMk8xGe9j", "zoT83w3SmYRD9spkjCxW"]
+    };
+
+
+    //----------------------------------------
     // ▼スタンプを表示する関数
     //----------------------------------------
 
@@ -212,31 +232,55 @@
 
     const renderImages = () => {
       stampListContainer.innerHTML = '';
-
-      // const imageWidth = (window.innerWidth - 5 * margin) / 3;
-
       const imageWidth = (window.innerWidth - 16 - (2 * margin)) / 3;  // 画像の間のマージンを2回分除外
 
-      initialImageUrls.forEach((imageUrl, index) => {
+      // lastClickedの値を参照して、該当するドキュメントIDの配列を取得
+      const btnId = localStorage.getItem("lastClicked") || "1";
+      const idsToDisplay = displayMapping[btnId];
+
+      if (!idsToDisplay) {
+        console.error('No images to display for this btnId:', btnId);
+        return;
+      }
+
+      idsToDisplay.forEach(id => {
+        // Find the document for the given id
+        const firestoreDoc = initialArray.find(doc => doc.id === id);
+        if (!firestoreDoc) return; // If no document found, continue to next iteration
+
         const imageWrapper = document.createElement('div');
         imageWrapper.className = 'image-wrapper';
-        // imageWrapper.style.marginRight = index !== 2 ? `${margin}px` : '0px';
 
         const imageElement = document.createElement('img');
-        imageElement.src = imageUrl;
+        imageElement.src = firestoreDoc.data.img;
         imageElement.className = 'image';
         imageElement.style.maxWidth = `${imageWidth}px`;
-        imageElements.push(imageElement)
 
         imageWrapper.appendChild(imageElement);
-
-        // const pointElement = document.createElement('div');
-        // pointElement.textContent = `${initialPointData[index]}`;
-        // pointElement.className = 'point';
-        // imageWrapper.appendChild(pointElement);
-
         stampListContainer.appendChild(imageWrapper);
       });
+
+
+      // initialImageUrls.forEach((imageUrl, index) => {
+      //   const imageWrapper = document.createElement('div');
+      //   imageWrapper.className = 'image-wrapper';
+      //   // imageWrapper.style.marginRight = index !== 2 ? `${margin}px` : '0px';
+
+      //   const imageElement = document.createElement('img');
+      //   imageElement.src = imageUrl;
+      //   imageElement.className = 'image';
+      //   imageElement.style.maxWidth = `${imageWidth}px`;
+      //   imageElements.push(imageElement)
+
+      //   imageWrapper.appendChild(imageElement);
+
+      //   // const pointElement = document.createElement('div');
+      //   // pointElement.textContent = `${initialPointData[index]}`;
+      //   // pointElement.className = 'point';
+      //   // imageWrapper.appendChild(pointElement);
+
+      //   stampListContainer.appendChild(imageWrapper);
+      // });
     }
     renderImages();
     window.addEventListener('resize', renderImages);
@@ -287,6 +331,7 @@
           storeLastClicked(btnId);
           highlightButton(btnId);
           addNeverClickableClass(btnId);
+          renderImages();
         });
       });
     };
