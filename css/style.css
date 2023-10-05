@@ -267,6 +267,8 @@ td img {
 }
 
 
+
+
 /************************** 
 スマホ画面 ロゴ、説明エリア
 ***************************/
@@ -274,6 +276,28 @@ td img {
 /* マウスオーバーしたときのカーソルのスタイルをポインタに設定 */
 a:hover {
     cursor: pointer;
+}
+
+/************************** 
+スタンプの上の集計数
+***************************/
+.stamp-container {
+    position: relative; 
+}
+
+.stamp-click-count {
+    position: absolute; 
+    top: -0.5rem; 
+    left: -0.5rem;
+    background-color: darkred;
+    color: white;
+    border-radius: 50%; 
+    width: 32px; 
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem; 
 }
 
 /************************** 
@@ -350,15 +374,6 @@ a:hover {
     color: white;
   }
   
-
-/************************** 
-スマホ画面 ポイント表示
-***************************/
-.userPoint {
-    display: inline-block;
-    /* 要素を横並びに表示 */
-}
-
 /************************** 
 ハートマーク
 ***************************/

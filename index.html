@@ -46,10 +46,25 @@
   <!----------------------------------------------
     ⭐️スタンプ表示エリア  
     ------------------------------------------------->
-  <div id="stampListContainer" class="flex justify-between px-1">
+  <!-- <div id="stampListContainer" class="flex justify-between px-1">
     <img src="img/stamp01.png" alt="Stamp 01" class="image w-1/3 px-1 rounded-lg" data-stamp-index="0">
     <img src="img/stamp02.png" alt="Stamp 02" class="image w-1/3 px-1 rounded-lg" data-stamp-index="1">
     <img src="img/stamp03.png" alt="Stamp 03" class="image w-1/3 px-1 rounded-lg" data-stamp-index="2">
+  </div> -->
+
+  <div id="stampListContainer" class="flex justify-between p-1">
+    <div class="stamp-container w-1/3 px-1">
+      <img src="img/stamp01.png" alt="Stamp 01" class="image rounded-lg" data-stamp-index="0">
+      <div class="stamp-click-count" data-stamp-index="0"></div>
+    </div>
+    <div class="stamp-container w-1/3 px-1">
+      <img src="img/stamp02.png" alt="Stamp 02" class="image rounded-lg" data-stamp-index="1">
+      <div class="stamp-click-count" data-stamp-index="1"></div>
+    </div>
+    <div class="stamp-container w-1/3 px-1">
+      <img src="img/stamp03.png" alt="Stamp 03" class="image rounded-lg" data-stamp-index="2">
+      <div class="stamp-click-count" data-stamp-index="2"></div>
+    </div>
   </div>
 
   <!-- <div id="stampSelections"></div> -->
@@ -154,6 +169,7 @@
     // 🔽 データ取得条件の指定（今回はorder順に並び替えて取得）
     const q = query(collection(db, collectionName), orderBy("order", "desc"));
 
+
     //----------------------------------------
     // ▼ハートをクリックした時の関数
     //----------------------------------------
@@ -192,6 +208,23 @@
       "7": ["i4CrW55ohJ9CWaaa0OED", "yfIPjgcYpm5PH30XfzgN", "7ZS4syokyxCNEGIfjRBU"],
       "8": ["zoT83w3SmYRD9spkjCxW", "A9W8CHH0jETzMk8xGe9j", "r1Jl2b6z8pTyTjybp3rH"]
     };
+
+
+    //----------------------------------------
+    // ▼カウントを表示する関数
+    //----------------------------------------
+    const updateClickCounts = async () => {
+      const btnId = localStorage.getItem("lastClicked") || "1";
+      const stampIds = displayMapping[btnId];
+
+      for (let i = 0; i < stampIds.length; i++) {
+        const stampId = stampIds[i];
+        const countDoc = await getDoc(doc(db, collectionName, stampId));
+        const count = countDoc.data().count;
+        document.querySelector(`.stamp-click-count[data-stamp-index="${i}"]`).innerText = count;
+      }
+    }
+
 
     //----------------------------------------
     // ▼スタンプ画像をクリックした時のクラス付与の関数
@@ -296,10 +329,12 @@
 
       buttons.forEach((button) => {
         const btnId = button.getAttribute("data-id");
+
         button.addEventListener("click", () => {
           storeLastClicked(btnId);
           highlightButton(btnId);
           addNeverClickableClass(btnId);
+          updateClickCounts();
         });
       });
     };
@@ -520,6 +555,7 @@
     window.addEventListener('resize', updatePersonWrapperStyle);
     updatePersonImage();
     updateButtonStyles();
+    updateClickCounts();
 
     //----------------------------------------
     // ▼スタンプクリック関数、ポイント加算関数
@@ -535,6 +571,7 @@
       stampButtonClicked(btnId, stampId);
       addNeverClickableClass(btnId);
       displayStampSelections();
+      updateClickCounts();
     };
 
     //----------------------------------------
