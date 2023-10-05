@@ -640,6 +640,7 @@
         if (change.type === "modified") {
           const stampURL = change.doc.data().img;
           drawImageOnCanvas(stampURL);
+          updateClickCounts();
         }
       });
     });
