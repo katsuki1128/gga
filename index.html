@@ -46,10 +46,12 @@
   <!----------------------------------------------
     ⭐️スタンプ表示エリア  
     ------------------------------------------------->
-
-  <div id="stampWrapper" class="px-2 z-index: 30;">
-    <div id="stampListContainer" class="stampContainer"></div>
+  <div id="stampListContainer" class="flex justify-between px-1">
+    <img src="img/stamp01.png" alt="Stamp 01" class="image w-1/3 px-1 rounded-lg" data-stamp-index="0">
+    <img src="img/stamp02.png" alt="Stamp 02" class="image w-1/3 px-1 rounded-lg" data-stamp-index="1">
+    <img src="img/stamp03.png" alt="Stamp 03" class="image w-1/3 px-1 rounded-lg" data-stamp-index="2">
   </div>
+
   <!-- <div id="stampSelections"></div> -->
   <!----------------------------------------------
     ⭐️ピッチ登壇者表示エリア
@@ -86,39 +88,20 @@
 
 
   <!----------------------------------------------
-    ⭐️ピッチ登壇者表示エリア
+    ⭐️ハートマーク
     ------------------------------------------------->
-  <!-- <div class="circle"> -->
-  <div>
-    <!-- <p class="heart">❤︎</p> -->
-    <img src="img/heart2.png" class="heart" />
-    <!-- </div> -->
+  <div class="circle">
+    <img src="img/heart2.png" class="heart" id="heartImage" />
   </div>
-  <!----------------------------------------------
-    ⭐️ポイント表示エリア  
-    ------------------------------------------------->
 
-  <!-- <section class="bg-gray-200">
-    <div class="flex flex-col items-center justify-center px-4 pt-4 pb-4 mx-auto">
-      <div class="w-full bg-white rounded-lg shadow sm:max-w-3xl md:w-4/5 xl:p-0">
-        <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-          <div class="flex flex-col items-center">
-            <h2 class="text-xl font-semibold mb-2">イベント熱量</h2>
-            <div id="userPoint" class="text-2xl font-bold userPoint"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section> -->
 
   <script type="module">
     //------------------------------------------
     // ▼firebaseプロジェクトとjavaScriptを連携させる
     //------------------------------------------
 
-    // 必要な機能をSDKからインポート
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js";
-    // import { initializeApp } from "firebase/compat/app";
 
     // firebase firestoreとやり取りをする設定
     import {
@@ -165,22 +148,90 @@
     const db = getFirestore(app);
 
     // コレクションの名前を定義
-    // const collectionName = "startup_kyushu2023";
     const collectionName = "startup_kyushu2023";
-    const collectionUsernName = "alter-user";
+    // const collectionUsernName = "alter-user";
 
     // 🔽 データ取得条件の指定（今回はorder順に並び替えて取得）
     const q = query(collection(db, collectionName), orderBy("order", "desc"));
 
-    // 🔽 データ取得条件の指定（今回はorder順に並び替えて取得）
-    const user_q = query(collection(db, collectionUsernName));
+    //----------------------------------------
+    // ▼ハートをクリックした時の関数
+    //----------------------------------------
+    const heartClick = () => {
+      const heartImage = document.getElementById('heartImage');
 
+      heartImage.addEventListener('click', async () => {
+
+        heartImage.style.transition = 'none'; // 一時的にtransitionを無効にする
+        heartImage.style.opacity = "0.5";  // Opacity を 0.5 に設定
+
+        // 少し遅延させて opacity を 1 に戻す
+        setTimeout(() => {
+          heartImage.style.transition = '';
+          heartImage.style.opacity = "1";
+        }, 10);
+
+        await updateDoc(doc(db, collectionName, 'qR17Y24YzQdUyrrMwKzs'), {
+          count: increment(1)
+        });
+      });
+    };
+
+    heartClick();
+
+    //----------------------------------------
+    // ▼スタンプの配列
+    //----------------------------------------
+    const displayMapping = {
+      "1": ["cwXYkq3piAbvAhDn1Xjs", "qpc0uA78IuoDvbghk9mB", "jealtUQHv1QQrNcAiwuq"],
+      "2": ["6zYKOcDVNpyfXmVxCvKl", "scGcrWzRYTxyWFvSvmRN", "Zlt5ZxigZOrmxnuKiUbQ"],
+      "3": ["IziClSdR2AhlXWE0O3tp", "eTCk6wN3Ftygfx8VUuWv", "efSL8QRl9vKg0WqVc5hS"],
+      "4": ["GMraxjKm9snDEnXb8x6V", "QflvlNPABNHewYLZ3X4l", "yUehqeFwYsudM0HWYsZT"],
+      "5": ["fAtESPKJcNQjhFn1KRXx", "8xkbKXJhEkDv0zXeDHns", "dw7TwBDHqb3iDyjHLQ7O"],
+      "6": ["GnkpqkuFdwUHQbxY3PPV", "0WWAnyU83WamPOeQPe8B", "9f1q1uZZdzVE7bBNXKAv"],
+      "7": ["i4CrW55ohJ9CWaaa0OED", "yfIPjgcYpm5PH30XfzgN", "7ZS4syokyxCNEGIfjRBU"],
+      "8": ["zoT83w3SmYRD9spkjCxW", "A9W8CHH0jETzMk8xGe9j", "r1Jl2b6z8pTyTjybp3rH"]
+    };
+
+    //----------------------------------------
+    // ▼スタンプ画像をクリックした時のクラス付与の関数
+    //----------------------------------------
+    const applyStampClickAnimation = (image) => {
+      image.classList.add('clicked-image');
+
+      setTimeout(() => {
+        image.classList.remove('clicked-image');
+      }, 2000);
+    };
+
+    //----------------------------------------
+    // ▼スタンプ画像をクリックした時のstampId取得関数
+    //----------------------------------------
+    const getStampInfoOnClick = () => {
+      document.querySelectorAll('.image').forEach(image => {
+
+        image.addEventListener('click', () => {
+          const btnId = localStorage.getItem("lastClicked") || "1";
+          const stampIndex = image.getAttribute('data-stamp-index');
+          const stampId = displayMapping[btnId][stampIndex];
+
+          applyStampClickAnimation(image);
+          triggerStampAction(btnId, stampId);
+          console.log(btnId, stampId);
+        });
+      });
+    };
+    document.addEventListener('DOMContentLoaded', getStampInfoOnClick);
+
+    //----------------------------------------
     // クリックされたスタンプのURLを格納する配列
+    //----------------------------------------
     let clickStamp = "";
     const clickStamps = [];
     const canvas = document.getElementById('overlay');
     const ctx = canvas.getContext('2d');
     const stamps = []; // スタンプの情報を保持する配列
+
     //----------------------------------------
     // ▼最初のスタンプ画像データの読み込み
     //----------------------------------------
@@ -194,7 +245,6 @@
       };
       initialArray.push(document);
     });
-
     const initialImageUrls = []; // imageUrlsを初期化しておく
     const initialPointData = []; // pointDataを初期化しておく
 
@@ -204,87 +254,6 @@
       // imageUrlsにdocument.data.imgを追加
       initialImageUrls.push(document.data.img);
     });
-
-
-    const stampListContainer = document.getElementById('stampListContainer');
-
-    //----------------------------------------
-    // ▼lastClickedの値に基づいて、表示するドキュメントIDを決定するためのJSON
-    //----------------------------------------
-    const displayMapping = {
-      "1": ["jealtUQHv1QQrNcAiwuq", "qpc0uA78IuoDvbghk9mB", "cwXYkq3piAbvAhDn1Xjs"],
-      "2": ["Zlt5ZxigZOrmxnuKiUbQ", "scGcrWzRYTxyWFvSvmRN", "6zYKOcDVNpyfXmVxCvKl"],
-      "3": ["efSL8QRl9vKg0WqVc5hS", "eTCk6wN3Ftygfx8VUuWv", "IziClSdR2AhlXWE0O3tp"],
-      "4": ["yUehqeFwYsudM0HWYsZT", "QflvlNPABNHewYLZ3X4l", "GMraxjKm9snDEnXb8x6V"],
-      "5": ["dw7TwBDHqb3iDyjHLQ7O", "8xkbKXJhEkDv0zXeDHns", "fAtESPKJcNQjhFn1KRXx"],
-      "6": ["9f1q1uZZdzVE7bBNXKAv", "0WWAnyU83WamPOeQPe8B", "GnkpqkuFdwUHQbxY3PPV"],
-      "7": ["7ZS4syokyxCNEGIfjRBU", "yfIPjgcYpm5PH30XfzgN", "i4CrW55ohJ9CWaaa0OED"],
-      "8": ["r1Jl2b6z8pTyTjybp3rH", "A9W8CHH0jETzMk8xGe9j", "zoT83w3SmYRD9spkjCxW"]
-    };
-
-
-    //----------------------------------------
-    // ▼スタンプを表示する関数
-    //----------------------------------------
-
-    const imageElements = [];
-    const margin = 8;
-
-    const renderImages = () => {
-      stampListContainer.innerHTML = '';
-      const imageWidth = (window.innerWidth - 16 - (2 * margin)) / 3;  // 画像の間のマージンを2回分除外
-
-      // lastClickedの値を参照して、該当するドキュメントIDの配列を取得
-      const btnId = localStorage.getItem("lastClicked") || "1";
-      const idsToDisplay = displayMapping[btnId];
-
-      if (!idsToDisplay) {
-        console.error('No images to display for this btnId:', btnId);
-        return;
-      }
-
-      idsToDisplay.forEach(id => {
-        // Find the document for the given id
-        const firestoreDoc = initialArray.find(doc => doc.id === id);
-        if (!firestoreDoc) return; // If no document found, continue to next iteration
-
-        const imageWrapper = document.createElement('div');
-        imageWrapper.className = 'image-wrapper';
-
-        const imageElement = document.createElement('img');
-        imageElement.src = firestoreDoc.data.img;
-        imageElement.className = 'image';
-        imageElement.style.maxWidth = `${imageWidth}px`;
-
-        imageWrapper.appendChild(imageElement);
-        stampListContainer.appendChild(imageWrapper);
-      });
-
-
-      // initialImageUrls.forEach((imageUrl, index) => {
-      //   const imageWrapper = document.createElement('div');
-      //   imageWrapper.className = 'image-wrapper';
-      //   // imageWrapper.style.marginRight = index !== 2 ? `${margin}px` : '0px';
-
-      //   const imageElement = document.createElement('img');
-      //   imageElement.src = imageUrl;
-      //   imageElement.className = 'image';
-      //   imageElement.style.maxWidth = `${imageWidth}px`;
-      //   imageElements.push(imageElement)
-
-      //   imageWrapper.appendChild(imageElement);
-
-      //   // const pointElement = document.createElement('div');
-      //   // pointElement.textContent = `${initialPointData[index]}`;
-      //   // pointElement.className = 'point';
-      //   // imageWrapper.appendChild(pointElement);
-
-      //   stampListContainer.appendChild(imageWrapper);
-      // });
-    }
-    renderImages();
-    window.addEventListener('resize', renderImages);
-
 
     //----------------------------------------
     // ▼スタンプをクリックできなくする関数
@@ -331,7 +300,6 @@
           storeLastClicked(btnId);
           highlightButton(btnId);
           addNeverClickableClass(btnId);
-          renderImages();
         });
       });
     };
@@ -429,13 +397,6 @@
       });
 
       table.appendChild(tbody);
-
-      // <div id="stampSelections"></div>の内容をクリア
-      // const container = document.getElementById("stampSelections");
-      // container.innerHTML = '';
-
-      // 新しいテーブルを<div id="stampSelections"></div>に追加する
-      // container.appendChild(table);
     };
 
     //----------------------------------------
@@ -444,12 +405,7 @@
 
     // アロー関数で定義
     const updatePersonWrapperStyle = () => {
-      // const viewportHeight = window.innerHeight;
       const personWrapper = document.getElementById('personWrapper');
-      // personWrapper.style.height = `${viewportHeight}px`;
-      // const topPosition = viewportHeight / 10;
-      // personWrapper.style.top = `${topPosition}px`; // position:absoluteの要素としてのtop
-
     };
 
     const updatePersonImage = () => {
@@ -566,72 +522,20 @@
     updateButtonStyles();
 
     //----------------------------------------
-    // ▼最初のユーザーデータ読み込み
-    //----------------------------------------
-
-    const initialUserSnapshot = await getDocs(user_q);
-    const initialUserArray = [];
-    initialUserSnapshot.docs.forEach(function (doc) {
-      const document = {
-        id: doc.id,
-        data: doc.data(),
-      };
-      initialUserArray.push(document);
-    });
-
-    //----------------------------------------
     // ▼スタンプクリック関数、ポイント加算関数
     //----------------------------------------
-    const stampClick = async (stampId, userId) => {
+    const triggerStampAction = async (btnId, stampId) => {
 
-      // ローカルストレージから直近に押したボタンとstampSelectionsを取得
-      const btnId = localStorage.getItem("lastClicked");
-      const storedStates = JSON.parse(localStorage.getItem("stampSelections") || '[]');
+      await updateDoc(doc(db, collectionName, stampId), {
+        count: increment(1)
+      });
 
       // ボタンのイベントリスナを初期化
       initializeButtons();
       stampButtonClicked(btnId, stampId);
       addNeverClickableClass(btnId);
       displayStampSelections();
-
-
-
-      const clickedStamp = await getDoc(doc(db, collectionName, stampId));
-
-      // const clickedCount = clickedStamp.data().count //クリックされたスタンプのそれまでのクリック数
-      const consumptionPoint = clickedStamp.data().point //クリックされたスタンプの消費ポイント
-
-      // Firebaseのクリック数を一つ増やす
-      await updateDoc(doc(db, collectionName, stampId), {
-        count: increment(1)
-      });
-
-      // ドキュメントのpointを使用して更新
-      await updateDoc(doc(db, collectionUsernName, userId), {
-        point: increment(consumptionPoint)
-      });
     };
-
-    //----------------------------------------
-    // ▼クリックされたスタンプのIDを取得する関数
-    //----------------------------------------
-
-    // 画像要素にクリックイベントリスナーを追加
-    imageElements.forEach((imageElement, index) => {
-      imageElement.addEventListener('click', () => {
-
-        const stampId = initialArray[index].id; // クリックされたドキュメントのIDを取得
-        const userId = initialUserArray[0].id; // arrayUserの最初のドキュメントのIDを取得
-        stampClick(stampId, userId);
-
-        // ボタンが押された時の挙動
-        imageElement.classList.add('clicked-image'); // クリックされたら 'clicked-image' クラスを追加
-
-        setTimeout(() => {
-          imageElement.classList.remove('clicked-image'); // 一定時間経過後に 'clicked-image' クラスを削除
-        }, 2000);
-      });
-    });
 
     //----------------------------------------
     // ▼変更ボタン関数
@@ -677,9 +581,8 @@
     onSnapshot(q, (querySnapshot) => {
       querySnapshot.docChanges().forEach((change) => {
         if (change.type === "modified") {
-          const clickStamp = change.doc.data().img;
-          drawImageOnCanvas(clickStamp);
-
+          const stampURL = change.doc.data().img;
+          drawImageOnCanvas(stampURL);
         }
       });
     });
