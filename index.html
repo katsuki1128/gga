@@ -46,11 +46,6 @@
   <!----------------------------------------------
     ⭐️スタンプ表示エリア  
     ------------------------------------------------->
-  <!-- <div id="stampListContainer" class="flex justify-between px-1">
-    <img src="img/stamp01.png" alt="Stamp 01" class="image w-1/3 px-1 rounded-lg" data-stamp-index="0">
-    <img src="img/stamp02.png" alt="Stamp 02" class="image w-1/3 px-1 rounded-lg" data-stamp-index="1">
-    <img src="img/stamp03.png" alt="Stamp 03" class="image w-1/3 px-1 rounded-lg" data-stamp-index="2">
-  </div> -->
 
   <div id="stampListContainer" class="flex justify-between p-1">
     <div class="stamp-container w-1/3 px-1">
@@ -67,7 +62,7 @@
     </div>
   </div>
 
-  <!-- <div id="stampSelections"></div> -->
+
   <!----------------------------------------------
     ⭐️ピッチ登壇者表示エリア
     ------------------------------------------------->
@@ -648,10 +643,8 @@
     //----------------------------------------
     // ▼基本パラメータを設定
     //----------------------------------------
-    // const targetX = (canvas.width) / 2// 画面中央のX座標
+
     const targetX = Math.random() * canvas.width;
-    // const variance = canvas.width / 40;  // これはどれくらい変動するかの範囲を指定します。この場合、画面の1/4の範囲で変動します。
-    // const targetX = canvas.width / 2 + (Math.random() - 0.5) * 2 * canvas.width / 40;  // 画面中央のX座標を基点にランダムな値を加える
 
     const targetY = (canvas.height) / 2; // 画面中央のY座標
     const maxSize = 200; // 最大サイズ
