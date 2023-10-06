@@ -240,13 +240,13 @@
       document.querySelectorAll('.image').forEach(image => {
 
         image.addEventListener('click', () => {
-          alert("クリックされました");
+          // alert("クリックされました");
           const btnId = localStorage.getItem("lastClicked") || "1";
           const stampIndex = image.getAttribute('data-stamp-index');
           const stampId = displayMapping[btnId][stampIndex];
 
-          // applyStampClickAnimation(image);
           triggerStampAction(btnId, stampId);
+          applyStampClickAnimation(image);
           console.log(btnId, stampId);
         });
       });
