@@ -243,9 +243,10 @@
           const stampIndex = image.getAttribute('data-stamp-index');
           const stampId = displayMapping[btnId][stampIndex];
 
-          applyStampClickAnimation(image);
           triggerStampAction(btnId, stampId);
           console.log(btnId, stampId);
+
+          applyStampClickAnimation(image);
         });
       });
     };
