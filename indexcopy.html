@@ -24,7 +24,7 @@
   <section>
     <div class="flex flex-col items-center justify-center px-2 py-2">
       <div class="canvas-wrapper relative">
-        <img src="img/bg.png" class="rounded-lg">
+        <!-- <img src="img/bg.png" class="rounded-lg"> -->
 
         <a href="stamp_create.html" class="absolute top-4 left-4">
           <img src="img/startup_kyushu_logo.png" class="w-1/2 mr-2" />
@@ -287,32 +287,32 @@
     // ▼スタンプをクリックできなくする関数
     //----------------------------------------
 
-    const addNeverClickableClass = (btnId) => {
-      if (!btnId) {
-        btnId = localStorage.getItem("lastClicked");
-      }
+    // const addNeverClickableClass = (btnId) => {
+    //   if (!btnId) {
+    //     btnId = localStorage.getItem("lastClicked");
+    //   }
 
-      // ローカルストレージから直近に押したボタンとstampSelectionsを取得
-      const index = localStorage.getItem("lastClicked");
-      const storedStates = JSON.parse(localStorage.getItem("stampSelections") || '[]');
+    //   // ローカルストレージから直近に押したボタンとstampSelectionsを取得
+    //   const index = localStorage.getItem("lastClicked");
+    //   const storedStates = JSON.parse(localStorage.getItem("stampSelections") || '[]');
 
-      if (storedStates[btnId - 1] !== null) {
+    //   if (storedStates[btnId - 1] !== null) {
 
-        const targetElements = document.querySelectorAll('.image');
+    //     const targetElements = document.querySelectorAll('.image');
 
-        targetElements.forEach((targetElement) => {
-          targetElement.classList.add('never-clickable');
-          targetElement.classList.remove('image');
-        });
-      } else if (storedStates[btnId - 1] === null) {
-        const targetElements = document.querySelectorAll('.never-clickable');
+    //     targetElements.forEach((targetElement) => {
+    //       targetElement.classList.add('never-clickable');
+    //       targetElement.classList.remove('image');
+    //     });
+    //   } else if (storedStates[btnId - 1] === null) {
+    //     const targetElements = document.querySelectorAll('.never-clickable');
 
-        targetElements.forEach((targetElement) => {
-          targetElement.classList.add('image');
-          targetElement.classList.remove('never-clickable');
-        });
-      };
-    };
+    //     targetElements.forEach((targetElement) => {
+    //       targetElement.classList.add('image');
+    //       targetElement.classList.remove('never-clickable');
+    //     });
+    //   };
+    // };
 
     //----------------------------------------
     // ▼スタンプを横からスライドインする関数
