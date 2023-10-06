@@ -349,7 +349,7 @@
         button.addEventListener("click", () => {
           storeLastClicked(btnId);
           highlightButton(btnId);
-          // addNeverClickableClass(btnId);
+          addNeverClickableClass(btnId);
           updateClickCounts();
           fadeInFromRightAnimation();
         });
@@ -566,7 +566,7 @@
     storeLastClicked();
     stampButtonClicked();
     highlightButton();
-    // addNeverClickableClass();
+    addNeverClickableClass();
     displayStampSelections();
     updatePersonWrapperStyle();
     window.addEventListener('resize', updatePersonWrapperStyle);
@@ -586,7 +586,7 @@
       // ボタンのイベントリスナを初期化
       initializeButtons();
       stampButtonClicked(btnId, stampId);
-      // addNeverClickableClass(btnId);
+      addNeverClickableClass(btnId);
       displayStampSelections();
       updateClickCounts();
     };
