@@ -221,94 +221,12 @@
           const stampId = displayMapping[btnId][stampIndex];
 
           applyStampClickAnimation(image);
-          triggerStampAction(btnId, stampId);
+          triggerStampAction(stampId);
           console.log(btnId, stampId);
         });
       });
     };
     document.addEventListener('DOMContentLoaded', getStampInfoOnClick);
-
-    //----------------------------------------
-    // クリックされたスタンプのURLを格納する配列
-    //----------------------------------------
-    let clickStamp = "";
-    const clickStamps = [];
-    const canvas = document.getElementById('overlay');
-    const ctx = canvas.getContext('2d');
-    const stamps = []; // スタンプの情報を保持する配列
-
-    //----------------------------------------
-    // ▼最初のスタンプ画像データの読み込み
-    //----------------------------------------
-
-    const initialSnapshot = await getDocs(q);
-    const initialArray = [];
-    initialSnapshot.docs.forEach(function (doc) {
-      const document = {
-        id: doc.id,
-        data: doc.data(),
-      };
-      initialArray.push(document);
-    });
-    const initialImageUrls = []; // imageUrlsを初期化しておく
-    const initialPointData = []; // pointDataを初期化しておく
-
-    initialArray.forEach(function (document, index) {
-      // countDataにdocument.data.countを追加
-      initialPointData.push(document.data.point);
-      // imageUrlsにdocument.data.imgを追加
-      initialImageUrls.push(document.data.img);
-    });
-
-    //----------------------------------------
-    // ▼スタンプをクリックできなくする関数
-    //----------------------------------------
-
-    // const addNeverClickableClass = (btnId) => {
-    //   if (!btnId) {
-    //     btnId = localStorage.getItem("lastClicked");
-    //   }
-
-    //   // ローカルストレージから直近に押したボタンとstampSelectionsを取得
-    //   const index = localStorage.getItem("lastClicked");
-    //   const storedStates = JSON.parse(localStorage.getItem("stampSelections") || '[]');
-
-    //   if (storedStates[btnId - 1] !== null) {
-
-    //     const targetElements = document.querySelectorAll('.image');
-
-    //     targetElements.forEach((targetElement) => {
-    //       targetElement.classList.add('never-clickable');
-    //       targetElement.classList.remove('image');
-    //     });
-    //   } else if (storedStates[btnId - 1] === null) {
-    //     const targetElements = document.querySelectorAll('.never-clickable');
-
-    //     targetElements.forEach((targetElement) => {
-    //       targetElement.classList.add('image');
-    //       targetElement.classList.remove('never-clickable');
-    //     });
-    //   };
-    // };
-
-    //----------------------------------------
-    // ▼スタンプを横からスライドインする関数
-    //----------------------------------------
-    // const fadeInFromRightAnimation = () => {
-    //   // 既存の要素を取得
-    //   const stampContainers = document.querySelectorAll(".stamp-container");
-
-    //   stampContainers.forEach(container => {
-    //     // アニメーションクラスを削除してリセット
-    //     container.classList.remove('fade-in-from-right');
-
-    //     // リフローをトリガー
-    //     void container.offsetWidth;
-
-    //     // アニメーションクラスを追加
-    //     container.classList.add('fade-in-from-right');
-    //   });
-    // }
 
     //----------------------------------------
     // ▼ピッチ登壇者ボタンのイベントリスナを設定する
@@ -324,9 +242,7 @@
         button.addEventListener("click", () => {
           storeLastClicked(btnId);
           highlightButton(btnId);
-          // addNeverClickableClass(btnId);
-          // updateClickCounts();
-          // fadeInFromRightAnimation();
+
         });
       });
     };
@@ -455,7 +371,6 @@
       imgElement.style.position = 'absolute';
       imgElement.style.right = '0';
 
-
     };
 
 
@@ -478,18 +393,18 @@
     //----------------------------------------
     // ▼スタンプクリック関数、ポイント加算関数
     //----------------------------------------
-    const triggerStampAction = async (btnId, stampId) => {
+    const triggerStampAction = async (stampId) => {
 
       await updateDoc(doc(db, collectionName, stampId), {
         count: increment(1)
       });
 
-      // ボタンのイベントリスナを初期化
-      initializeButtons();
-      stampButtonClicked(btnId, stampId);
-      // addNeverClickableClass(btnId);
-      displayStampSelections();
-      // updateClickCounts();
+      // // ボタンのイベントリスナを初期化
+      // initializeButtons();
+      // stampButtonClicked(btnId, stampId);
+      // // addNeverClickableClass(btnId);
+      // displayStampSelections();
+      // // updateClickCounts();
     };
 
   </script>
