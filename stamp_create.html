@@ -84,6 +84,10 @@
     </div>
   </section>
 
+
+  <!-- ⭐️カウントゼロにするボタン -->
+  <button id="resetButton">カウントを0にリセット</button>
+
   <!-- ⭐️スタンプ一覧表示エリア -->
   <section class="bg-gray-200">
     <div class="flex flex-col items-center justify-center px-6 pt-4 pb-4 mx-auto">
@@ -188,6 +192,35 @@
 
     // 🔽 データ取得条件の指定（今回はorder順に並び替えて取得）
     const q = query(collection(db, collectionName), orderBy("order", "desc"));
+
+    //----------------------------------------
+    // ▼カウントをゼロにする関数
+    //----------------------------------------
+    async function resetCount() {
+
+      const querySnapshot = await getDocs(q)
+
+      querySnapshot.forEach(async (doc) => {
+        try {
+          // ドキュメントのデータを取得
+          const docData = doc.data();
+
+          // カウントを0に設定
+          docData.count = 0;
+
+          // ドキュメントを更新
+          await updateDoc(doc.ref, docData);
+        } catch (error) {
+          console.error("ドキュメントの更新エラー:", error);
+        }
+      });
+
+      alert("カウントを0にリセットしました");
+    }
+
+    // ボタンクリック時の処理
+    const resetButton = document.getElementById("resetButton");
+    resetButton.addEventListener("click", resetCount);
 
     //----------------------------------------
     // ▼画像が選択された時のみ登録ボタンが有効になる
