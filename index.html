@@ -236,9 +236,11 @@
     // ▼スタンプ画像をクリックした時のstampId取得関数
     //----------------------------------------
     const getStampInfoOnClick = () => {
+
       document.querySelectorAll('.image').forEach(image => {
 
         image.addEventListener('click', () => {
+          alert("クリックされました");
           const btnId = localStorage.getItem("lastClicked") || "1";
           const stampIndex = image.getAttribute('data-stamp-index');
           const stampId = displayMapping[btnId][stampIndex];
