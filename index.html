@@ -150,14 +150,17 @@
       initialArray.push(document);
     });
     const initialImageUrls = []; // imageUrlsを初期化しておく
-    const initialPointData = []; // pointDataを初期化しておく
+    const initialCounts = [];
 
     initialArray.forEach(function (document, index) {
-      // countDataにdocument.data.countを追加
-      initialPointData.push(document.data.point);
+
       // imageUrlsにdocument.data.imgを追加
       initialImageUrls.push(document.data.img);
+      initialCounts.push(document.data.count || 0);
+      console.log(initialCounts);
     });
+    let totalCount = initialCounts.reduce((sum, count) => sum + count, 0);
+
 
     //----------------------------------------
     // ▼スタンプを表示する関数
@@ -175,21 +178,17 @@
         const imageElement = document.createElement('img');
         imageElement.src = imageUrl;
         imageElement.className = 'image';
+        imageElement.style.marginBottom = '8px';
         imageElements.push(imageElement)
 
-
         imageWrapper.appendChild(imageElement);
-        const pointElement = document.createElement('div');
-        pointElement.textContent = `${initialPointData[index]}`;
-        pointElement.className = 'point';
-        imageWrapper.appendChild(pointElement);
 
         stampListContainer.appendChild(imageWrapper);
       });
     }
     renderImages();
 
-    console.log("imageElements", imageElements);
+    // console.log("imageElements", imageElements);
 
     //----------------------------------------
     // ▼スタンプクリック関数、ポイント加算関数
@@ -255,18 +254,19 @@
     //----------------------------------------
     // ▼firebaseが更新されるごとに処理を実行
     //----------------------------------------
-    let totalCount = 0;
+    // let totalCount = 0;
 
     // データ取得処理(データベース上でデータの変更が発生したタイミングで {} 内の処理を実行)
     onSnapshot(q, (querySnapshot) => {
+      console.log("Total Count:", totalCount);
       totalCount = 0;
+
       // 各ドキュメントのcountフィールドを合計する
       querySnapshot.docs.forEach(doc => {
         totalCount += doc.data().count || 0; // 万が一countがundefinedの場合は0として扱います
-
       });
 
-      console.log("Total Count:", totalCount); // 合計値をコンソールに表示
+      // console.log("Total Count:", totalCount); // 合計値をコンソールに表示
 
       querySnapshot.docChanges().forEach((change) => {
         if (change.type === "modified") {
@@ -274,7 +274,6 @@
           drawImageOnCanvas(stampURL);
         }
       });
-
     });
 
 
@@ -419,6 +418,10 @@
         requestAnimationFrame(animate);
       }
     };
+
+
+    drawBarGraph(totalCount);
+    drawBackgroundImage();
 
     //----------------------------------------
     // ▼ダブルクリックされないようにする関数
