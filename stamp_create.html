@@ -188,7 +188,7 @@
     const db = getFirestore(app);
 
     // コレクションの名前を定義
-    const collectionName = "startup_kyushu2023";
+    const collectionName = "gga";
 
     // 🔽 データ取得条件の指定（今回はorder順に並び替えて取得）
     const q = query(collection(db, collectionName), orderBy("order", "desc"));
