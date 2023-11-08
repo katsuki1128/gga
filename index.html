@@ -24,7 +24,7 @@
   <section>
     <div class="flex flex-col items-center justify-center" style="background-color: #02a7e9;">
       <div class="canvas-wrapper relative">
-        <img src="img/tv.png" class="rounded-lg">
+        <img src="img/tv2.png" class="rounded-lg">
         <canvas id="overlay"></canvas>
       </div>
     </div>
@@ -32,6 +32,26 @@
   <!----------------------------------------------
     ⭐️スタンプ表示エリア  
     ------------------------------------------------->
+  <div class="flex flex-col items-center justify-center px-2 py-2 mx-auto bg-gray-200">
+    <div class="w-full bg-white rounded-lg shadow sm:max-w-3xl md:w-4/5 xl:p-0">
+      <div class="px-3 py-2 space-y-4 md:space-y-4 sm:p-8">
+        <div>
+          <div class="text-left mb-1">
+            <p class="text-lg">
+              ⭐️スタンプをテレビに飛ばせます
+            </p>
+            <p class="text-lg">
+              ⭐️音声が出ます♪
+            </p>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  </div>
 
   <div id="stampListContainer" class="flex flex-wrap justify-between p-1">
   </div>
@@ -395,7 +415,7 @@
     // 画像を読み込む
     //----------------------------------------
     const bgImage = new Image();
-    bgImage.src = 'img/tv.png';
+    bgImage.src = 'img/tv2.png';
 
     // 画像をキャンバス上に描画する関数
     const drawBackgroundImage = () => {
