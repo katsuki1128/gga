@@ -240,7 +240,9 @@
           // if (isClickDisabled) return;
 
           const stampId = initialArray[index].id; // クリックされたドキュメントのIDを取得
-          stampClick(stampId);
+          setTimeout(() => {
+            stampClick(stampId);
+          }, 1000);
 
           // ボタンが押された時の挙動
           imageElement.classList.add('clicked-image'); // クリックされたら 'clicked-image' クラスを追加
@@ -394,21 +396,58 @@
       }
 
       //----------------------------------------
-      // ▼グラフを描画
-      //----------------------------------------    
+      // ▼棒グラフの描画関数
+      //----------------------------------------
 
-      const drawBarGraph = (totalCount) => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let currentAGroupHeight = 0;
+      let currentBGroupHeight = 0;
+      const lerpRate = 0.05;  // 補完率。0.05のような小さい値でスムーズな変化を得る
+      let isFirstDraw = true;
 
-        console.log("描画成功");
-        const maxHeight = canvas.height * 0.2;
-        const barHeight = (totalCount / 100 * 2) * maxHeight;
+      let imageA = document.createElement('img');
+      imageA.src = './img/star_blue.jpg';
 
-        ctx.globalAlpha = 1.0;  // <- 透明度を1に設定
-        ctx.fillStyle = "white";  // バーの色
-        ctx.fillRect(0, canvas.height - barHeight, canvas.width, barHeight);
+      let imageB = document.createElement('img');
+      imageB.src = './img/star_red.jpg';
+      console.log(imageA);
+
+      function drawBarGraph(AGroupPercentage, BGroupPercentage) {
+
+        const barWidth = 50;
+        const barX1 = 50;
+        const barX2 = canvas.width - 50 - barWidth;
+
+        const maxCanvasPercentage = 0.5;  // これはcanvas.heightの50%を意味します。
+        const targetAGroupHeight = calculateBarHeight(AGroupPercentage, maxCanvasPercentage, canvas.height);
+        const targetBGroupHeight = calculateBarHeight(BGroupPercentage, maxCanvasPercentage, canvas.height);
+        // console.log(currentAGroupHeight);
+
+        // 現在の高さを目標の高さに近づける
+        if (isFirstDraw) {
+          currentAGroupHeight = targetAGroupHeight;
+          currentBGroupHeight = targetBGroupHeight;
+          isFirstDraw = false;
+        } else {
+          currentAGroupHeight += (targetAGroupHeight - currentAGroupHeight) * lerpRate;
+          currentBGroupHeight += (targetBGroupHeight - currentBGroupHeight) * lerpRate;
+        }
+
+        // Aグループのバーグラフのテクスチャを設定
+        let patternA = ctx.createPattern(imageA, 'repeat');
+        ctx.fillStyle = patternA;
+        // ctx.fillStyle = "#0000cc";
+        ctx.fillRect(barX1, canvas.height, barWidth, -currentAGroupHeight);
+        // console.log(barX1, canvas.height, barWidth, -currentAGroupHeight);
+
+        let patternB = ctx.createPattern(imageB, 'repeat');
+        ctx.fillStyle = patternB;
+        // ctx.fillStyle = '#cc0000';
+        ctx.fillRect(barX2, canvas.height, barWidth, -currentBGroupHeight);
+      };
+
+      function calculateBarHeight(percentage, maxCanvasPercentage, canvasHeight) {
+        return (percentage / 100) * maxCanvasPercentage * canvasHeight;
       }
-
 
 
       //----------------------------------------
@@ -494,7 +533,8 @@
               stamp.alpha -= 0.05;
             }
 
-            ctx.globalAlpha = stamp.alpha;
+            ctx.globalAlpha = 1; // グラフの透明度を 1 に設定
+            // ctx.globalAlpha = stamp.alpha;
             const centerX = stamp.posX + stamp.size / 2;
             const centerY = stamp.posY + stamp.size / 2;
             ctx.drawImage(stamp.image, centerX - stamp.size / 2, centerY - stamp.size / 2, stamp.size, stamp.size);
@@ -525,9 +565,9 @@
       //----------------------------------------
       const animate = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
+        drawBarGraph(AGroupPercentage, BGroupPercentage);
 
-        drawBarGraph(totalCount);
-        drawBackgroundImage();
+        // drawBackgroundImage();
         updateAndDrawStamps();
 
         if (stamps.length > 0) {
@@ -536,8 +576,8 @@
       };
 
 
-      drawBarGraph(totalCount);
-      drawBackgroundImage();
+
+      // drawBackgroundImage();
 
       //----------------------------------------
       // ▼ダブルクリックされないようにする関数
