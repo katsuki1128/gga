@@ -56,12 +56,7 @@
   <div id="stampListContainer" class="flex flex-wrap justify-between p-1">
   </div>
 
-  <!----------------------------------------------
-    ⭐️ハートマーク
-    ------------------------------------------------->
-  <div class="circle">
-    <img src="img/heart2.png" class="heart" id="heartImage" />
-  </div>
+
 
   <script type="module">
     //------------------------------------------
@@ -122,30 +117,7 @@
     // 🔽 データ取得条件の指定（今回はorder順に並び替えて取得）
     const q = query(collection(db, collectionName), orderBy("order", "desc"));
 
-    //----------------------------------------
-    // ▼ハートをクリックした時の関数
-    //----------------------------------------
-    const heartClick = () => {
-      const heartImage = document.getElementById('heartImage');
 
-      heartImage.addEventListener('click', async () => {
-
-        heartImage.style.transition = 'none'; // 一時的にtransitionを無効にする
-        heartImage.style.opacity = "0.5";  // Opacity を 0.5 に設定
-
-        // 少し遅延させて opacity を 1 に戻す
-        setTimeout(() => {
-          heartImage.style.transition = '';
-          heartImage.style.opacity = "1";
-        }, 10);
-
-        await updateDoc(doc(db, "startup_kyushu2023", 'qR17Y24YzQdUyrrMwKzs'), {
-          count: increment(1)
-        });
-      });
-    };
-
-    heartClick();
 
     //----------------------------------------
     // クリックされたスタンプのURLを格納する配列
