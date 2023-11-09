@@ -28,14 +28,14 @@
         <canvas id="overlay"></canvas>
       </div>
     </div>
-    <div>
-      <button id="resetButton" top="-50" left="100"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-        clear
-      </button>
-    </div>
   </section>
-
+  <div>
+    <!-- <div class="canvas-wrapper relative z-10" style="position: relative; bottom: 50px;"> -->
+    <!-- <button id="resetButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+        clear
+      </button> -->
+    <!-- </div> -->
+  </div>
   <!-- 左下のA_Groupのパーセンテージ表示 -->
   <div id="AGroupPercentage" style="font-size: 100px; position: absolute; bottom: 21px; left: 71px;">
   </div>
@@ -65,6 +65,13 @@
             <p class="text-lg">
               ⭐️音声が出ます♪
             </p>
+            <p class="text-lg">
+              ⭐️データクリア
+              <button id="resetButton"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                clear
+              </button>
+            </p>
           </div>
         </div>
       </div>
@@ -77,8 +84,6 @@
   </div>
   <div id="stampListContainer" class="flex flex-wrap justify-between p-1">
   </div>
-
-
 
   <script type="module">
     //------------------------------------------
@@ -292,28 +297,14 @@
           imageElement.classList.remove('clicked-image'); // 一定時間経過後に 'clicked-image' クラスを削除
           // isClickDisabled = false; // 一定時間後にクリックを再度有効にする
         }, 1000);
-
-        //----------------------------------------
-        // ▼クリックした画像の表示
-        //----------------------------------------
-        setTimeout(function () {
-          displayImageInSlot(imageElement.src);
-        }, 1000);
       });
     });
-
-
 
     //----------------------------------------
     // ▼canvas背景の画像の大きさを取得する関数
     //----------------------------------------
 
     let canvasImage = document.querySelector('.canvas-wrapper img');
-
-    // function setCanvasSizeAndDraw() {
-    //   canvas.width = canvasImage.width;
-    //   canvas.height = canvasImage.height;
-    // }
 
     // ウィンドウがリサイズされたときも、キャンバスのサイズを再設定する
     window.addEventListener('resize', function () {
@@ -445,26 +436,11 @@
       const image = document.createElement('img');
       image.className = "stampMoving";
       image.onload = () => {
-        //----------------------------------------
-        // ▼aかbかを振り分ける
-        //----------------------------------------
-        // let startX;s
-        // if (['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8'].includes(stampType)) {
-        // startX = Math.random() * 180 + 10;
-
-        // } else if (['b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8'].includes(stampType)) {
-        // ここでスタンプの最大サイズを引いて右側のスタンプが見切れないように調整します
-        // const maxStampSize = 30; // スタンプの最大サイズを適切な値に設定する
-        // startX = canvas.width - maxStampSize - 230 + Math.random() * 180;
-        // }
-        //----------------------------------------
-        // ▼基本パラメータを設定して、オブジェクトを作成
-        //----------------------------------------
 
         const stampInfo = {
           image: image,
           posX: Math.random() * canvas.width,
-          posY: -100,
+          posY: rectY + rectHeight - image.height,
           velocityX: 0,
           initialVelocityY: 0.7 + Math.random() * 3,
           velocityY: 0.3 + Math.random(),
@@ -499,41 +475,11 @@
     };
 
     //----------------------------------------
-    // キャンバスの中央から左右100pxの範囲の境界を定義
-    //----------------------------------------
-    const leftBoundary = canvas.width / 2 - canvas.width / 4;
-    const rightBoundary = canvas.width / 2 + canvas.width / 5;;
-    // console.log(leftBoundary, rightBoundary)
-
-
-    //----------------------------------------
-    // セーフティエリアの線を引く関数
-    //----------------------------------------
-    function drawSafetyArea() {
-      const safetyAreaPercentage = 0.93;
-      const safetyAreaWidth = canvas.width * safetyAreaPercentage;
-      const safetyAreaHeight = canvas.height * safetyAreaPercentage;
-
-      // 枠線の開始位置を計算（中央に配置するためのオフセットを計算）
-      const offsetX = (canvas.width - safetyAreaWidth) / 2;
-      const offsetY = (canvas.height - safetyAreaHeight) / 2;
-
-      ctx.strokeStyle = 'white'; // 枠線の色
-      ctx.lineWidth = 2;         // 枠線の太さ
-      ctx.strokeRect(offsetX, offsetY, safetyAreaWidth, safetyAreaHeight);
-    }
-    //----------------------------------------
     // ▼アニメーション全体の関数
     //----------------------------------------
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
       drawBarGraph(AGroupPercentage, BGroupPercentage); // ここでグラフを再描画
-      // console.log(AGroupPercentage, BGroupPercentage)
-      // drawSafetyArea();
-
-      // ctx.fillStyle = 'lightgreen';
-      // 指定された範囲に長方形を描画します。
-      // ctx.fillRect(leftBoundary, 0, rightBoundary - leftBoundary, canvas.height);
 
       for (let i = 0; i < stamps.length; i++) {
         // 画面の半分に来たら重ならないようにする
@@ -565,19 +511,7 @@
           }
         }
 
-        //----------------------------------------
-        // ▼スタンプが中央に寄らないようにする関数
-        //----------------------------------------
-        if (stamps[i].posX > leftBoundary && stamps[i].posX < rightBoundary) {
-          //     スタンプの水平速度を反転
-          stamps[i].velocityX = -stamps[i].velocityX;
 
-          if (Math.abs(stamps[i].posX - leftBoundary) < Math.abs(stamps[i].posX - rightBoundary)) {
-            stamps[i].posX = leftBoundary;  // leftBoundaryにはりつく
-          } else {
-            stamps[i].posX = rightBoundary; // rightBoundaryにはりつく
-          }
-        }
 
         //----------------------------------------
         // ▼アニメーションの関数
@@ -668,7 +602,6 @@
 
     const drawBarGraph = (AGroupPercentage, BGroupPercentage) => {
 
-
       // console.log('左下の座標:', bottomLeft);
       // console.log('右下の座標:', bottomRight);
 
@@ -712,7 +645,7 @@
       // ctx.fillRect(canvas.width / 10.2, canvas.height / 15, canvas.width / 1.265, canvas.height / 1.62);
     };
 
-    function calculateBarHeight(percentage, maxCanvasPercentage, canvasHeight) {
+    const calculateBarHeight = (percentage, maxCanvasPercentage, canvasHeight) => {
       return (percentage / 100) * maxCanvasPercentage * canvasHeight;
     }
 
