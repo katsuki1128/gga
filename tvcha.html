@@ -7,8 +7,7 @@
   <meta name="viewport"
     content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
-
-  <title>GGA2023Autumn</title>
+  <title>GGA2023tvcha</title>
 
   <!-- CSS & Tailwind -->
   <!-- <link rel="stylesheet" href="css/reset.css" /> -->
@@ -21,75 +20,86 @@
   <!----------------------------------------------
     ⭐️タイトル
     ------------------------------------------------->
-  <section>
-    <div class="flex flex-col items-center justify-center">
-      <div class="canvas-wrapper relative">
-        <img src="img/tv2.png">
-        <canvas id="overlay"></canvas>
-      </div>
-    </div>
-  </section>
-  <div>
-    <!-- <div class="canvas-wrapper relative z-10" style="position: relative; bottom: 50px;"> -->
-    <!-- <button id="resetButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-        clear
-      </button> -->
-    <!-- </div> -->
-  </div>
-  <!-- 左下のA_Groupのパーセンテージ表示 -->
-  <div id="AGroupPercentage" style="font-size: 100px; position: absolute; bottom: 21px; left: 71px;">
-  </div>
 
-  <!-- 左下のA_Groupの個数表示 -->
-  <div id="AGroupCount" class="stampCount" style="font-size: 20px; position: absolute; bottom: 0; left: 0;z-index: 5">
-  </div>
-
-  <!-- 右側のB_Groupのパーセンテージ表示 -->
-  <div id="BGroupPercentage" style="font-size: 100px; position: absolute; bottom: 21px; right: -55px;"></div>
-
-  <!-- 右下のA_Groupの個数表示 -->
-  <div id="BGroupCount" class="stampCount" style="font-size: 20px; position: absolute; bottom: 0; right: 0;z-index: 5">
-  </div>
-
-  <!----------------------------------------------
-    ⭐️注意書き
-    ------------------------------------------------->
-  <div class="flex flex-col items-center justify-center px-2 py-2 mx-auto bg-gray-200 rounded-lg shadow-lg">
-    <div class="w-full bg-white rounded-lg shadow-md sm:max-w-3xl md:w-4/5 xl:p-0">
-      <div class="px-2 py-2 space-y-2 md:space-y-2 sm:p-2">
-        <div>
-          <div class="text-left mb-2">
-            <p class="text-lg font-bold">
-              ⭐️スタンプをテレビに飛ばせます
-            </p>
-            <p class="text-lg font-bold">
-              ⭐️音声が出ます♪
-            </p>
-            <p class="text-lg font-bold">
-              ⭐️データクリア
-              <button id="resetButton"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 text-sm rounded-full">
-                clear
-              </button>
-            </p>
+  <section id="header" class="bg-gray-200">
+    <div class="flex flex-col items-center justify-center px-3 pt-3 pb-3 mx-auto">
+      <div class="w-full bg-white rounded-lg shadow sm:max-w-3xl md:w-4/5 xl:p-0">
+        <div class="p-3 space-y-4 md:space-y-6 sm:p-8">
+          <div>
+            <img class="w-full h-15 mr-2" src="./img/uretoru_logo.png" alt="logo" />
+            <div class="text-center mt-4 mb-0 mx-0" id="contentDiv">
+              <div class="text-left mb-1">
+                <p class="text-lg">
+                  ⭐️Aマサル/B伊藤舞スタンプで応援
+                </p>
+                <p class="text-lg">
+                  ⭐️スタンプがテレビに飛んでいくよ
+                </p>
+                <p class="text-lg">
+                  ⭐️音声が出ます♪
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!----------------------------------------------
+  <section id="stampWrapper">
+    <!----------------------------------------------
     ⭐️スタンプ表示エリア
     ------------------------------------------------->
-  </div>
-  <div id="stampListContainer" class="flex flex-wrap justify-between p-1">
-  </div>
+    <div>
+      <div id="stampListContainer" class="flex flex-wrap justify-between p-1">
+      </div>
+    </div>
+  </section>
+  <section id="stampCountWrapper" class="bg-gray-200">
+    <div class="flex flex-col items-center justify-center px-3 pt-3 pb-3 mx-auto">
+      <div class="w-full bg-white rounded-lg shadow sm:max-w-3xl md:w-4/5 xl:p-0">
+        <div class="p-3" id="slot">
+          <div class="mb-2 text-lg text-gray-700 font-medium text-center" id="thanks">
+            ⛑ 送れるスタンプは１日３回です 😊
+          </div>
+          <div>
+            <div class="dotted-circles-container">
+              <div class="dotted-circle image-slot">1</div>
+              <div class="dotted-circle image-slot">2</div>
+              <div class="dotted-circle image-slot">3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-center mt-2">
+        <div class="my-2">
+          <img src="./img/station_logo.png" alt="logo" class="w-32 h-auto" />
+        </div>
+        <div>
+          <p class="text-xs">© FUKUOKA BROADCASTING SYSTEM CORP.</p>
+        </div>
+      </div>
+  </section>
+
+
+  <section>
+    <div class="flex flex-col items-center justify-center">
+      <div class="canvas-wrapper relative">
+        <canvas id="overlay"></canvas>
+      </div>
+    </div>
+  </section>
+
+
+
 
   <!----------------------------------------------
     ⭐️実際のUIへのリンク
     ------------------------------------------------->
-  </div>
-  <a href="tvcha.html">実際のUI</a>
+  <div>
+    <a href="index.html">GGA用UI
+
   </div>
 
   <script type="module">
@@ -681,6 +691,82 @@
     // ボタンクリック時の処理
     const resetButton = document.getElementById("resetButton");
     resetButton.addEventListener("click", resetCount);
+
+    //----------------------------------------
+    // ▼メッセージを出すロジックと関数
+    //----------------------------------------
+
+    const displayMessage = (targetPrefix, currentCount) => {
+      // メッセージの配列
+      const aMessages = [
+        `${currentCount}回も送ってくれて、おいさんうれしか⛑！！`,
+        `今ので${currentCount}個目ばい⛑!嬉しか！`,
+        `おいさー⛑！いい感じ！${currentCount}個目！`,
+        `${currentCount}回送ってくれたばい⛑！`,
+        "応援ありがとさん⛑⛑！！"
+      ];
+
+      const bMessages = [
+        `${currentCount}回も送ってくれて、嬉しいです！！`,
+        `まいさー！${currentCount}個🥹ありがとう！`,
+        `${currentCount}回送ってくれました❣️`,
+        "応援ありがとうございます！！"
+      ];
+
+      let messages = targetPrefix === 'b' ? aMessages : bMessages;
+      // console.log(targetPrefix);
+
+      // 10%の確率でtrueを返す
+      const shouldShowMessage = () => Math.random() < 0.3;
+
+      // カウントがメッセージを表示すべきかどうかを判断
+      if (shouldShowMessage()) {
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        document.getElementById('thanks').innerText = randomMessage;
+        // console.log(randomMessage);
+        // メッセージ表示の回数を保存
+        localStorage.setItem('lastMessageShownCount', currentCount);
+        // console.log("currentCount (message shown):", currentCount);
+      } else {
+        const lastMessageShownCount = parseInt(localStorage.getItem('lastMessageShownCount') || "0");
+
+        // メッセージが表示されてから5回以上クリックされた場合、メッセージを削除
+        if (currentCount - lastMessageShownCount > 5) {
+          document.getElementById('thanks').innerText = "⛑ご参加ありがとうございます😊";
+        }
+        // console.log("currentCount:", currentCount);
+      }
+    }
+
+    //----------------------------------------
+    // ▼クリックした画像の表示関数
+    //----------------------------------------
+
+    const displayImageInSlot = (id, circleSize) => {
+      // 画像のsrcを組み立てる
+      const src = `./img/${id}.png`;
+
+      // 最初の空の.image-slotを選択
+      const slot = document.querySelector('.image-slot');
+
+      if (slot) {
+        // img要素を作成して、src属性を設定
+        const img = document.createElement('img');
+        img.src = src;
+        img.style.width = `${circleSize}px`;    // 画像のサイズを指定
+        img.style.height = `${circleSize}px`;   // 画像のサイズを指定
+        img.classList.add('fade-in'); // フェードインアニメーションのクラスを追加
+        // console.log(img.style.width);
+
+        // 現在の内容 (数字) をクリアして画像を追加
+        slot.innerHTML = "";
+        slot.appendChild(img);
+
+        // .image-slotクラスを取り除く
+        slot.classList.remove("image-slot", "coin-design");
+        slot.classList.add("dotted-circle");
+      }
+    };
 
     //----------------------------------------
     // ▼ダブルクリックされないようにする関数
