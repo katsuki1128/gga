@@ -28,6 +28,12 @@
         <canvas id="overlay"></canvas>
       </div>
     </div>
+    <div>
+      <button id="resetButton" top="-50" left="100"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+        clear
+      </button>
+    </div>
   </section>
 
   <!-- 左下のA_Groupのパーセンテージ表示 -->
@@ -164,13 +170,46 @@
       //----------------------------------------
       let AGroupCount = 0;
       let BGroupCount = 0;
-      let AGroupPercentage;
-      let BGroupPercentage;
+      let totalCount = 0;
+      let AGroupPercentage = 0;
+      let BGroupPercentage = 0;
 
-      // AグループのIDのリスト
+      // AグループとBグループのIDのリスト
       const AGroupIds = ['Sw077n0mreVj9exRh81f', 'xrnvFgD3PCjestA64SGd', 'ZXxNNOE8iKsrg8x3UiZ8', 'hgGsPbYmVKtw1ZLxljcr'];
-      // BグループのIDのリスト
       const BGroupIds = ['p1DmVCDLRcPBgpdGfTuY', 'NgLy7OAjlR6b7LF3Bfmp', 'xrnvFgD3PCjestA64SGd', 'gfYdaXfqBcumPyn5puV9'];
+
+      //----------------------------------------
+      // カウントとパーセンテージを計算する関数
+
+      //----------------------------------------
+      const calculateCountsAndPercentages = (docs) => {
+        // カウントをリセット
+        AGroupCount = 0;
+        BGroupCount = 0;
+        totalCount = 0;
+
+        // 各ドキュメントのカウントを集計する
+        docs.forEach((doc) => {
+          const docId = doc.id;
+          const docCount = doc.data().count || 0;
+
+          if (AGroupIds.includes(docId)) {
+            AGroupCount += docCount;
+          }
+          if (BGroupIds.includes(docId)) {
+            BGroupCount += docCount;
+          }
+        });
+
+        // 合計カウントとパーセンテージを計算
+        totalCount = AGroupCount + BGroupCount;
+        AGroupPercentage = (totalCount > 0) ? (AGroupCount / totalCount) * 100 : 0;
+        BGroupPercentage = (totalCount > 0) ? (BGroupCount / totalCount) * 100 : 0;
+
+        // 結果をコンソールに出力
+        console.log('AGroupCount:', AGroupCount, 'BGroupCount:', BGroupCount);
+        console.log('AGroupPercentage:', AGroupPercentage.toFixed(2), 'BGroupPercentage:', BGroupPercentage.toFixed(2));
+      };
 
 
       //----------------------------------------
@@ -178,91 +217,30 @@
       //----------------------------------------
 
       const initialSnapshot = await getDocs(q);
+      // calculateCountsAndPercentages(initialSnapshot.docs);
 
-      const initialArray = [];
-      const initialImageUrls = [];
+      const initialArray = initialSnapshot.docs.map(doc => ({
+        id: doc.id,
+        data: doc.data(),
+      }));
 
-      // ドキュメントの処理を一つのループで行う
-      initialSnapshot.docs.forEach((doc) => {
-        const docData = doc.data();
-        const docId = doc.id;
-        const docCount = docData.count || 0;
+      const initialImageUrls = initialArray.map(doc => doc.data.img);
 
-        // 初期配列にドキュメント情報を追加
-        initialArray.push({
-          id: docId,
-          data: docData,
+
+
+      // データ取得処理(データベース上でデータの変更が発生したタイミングで {} 内の処理を実行)
+      onSnapshot(q, (querySnapshot) => {
+        calculateCountsAndPercentages(querySnapshot.docs);
+        drawBarGraph(AGroupPercentage, BGroupPercentage);
+
+        querySnapshot.docChanges().forEach((change) => {
+          if (change.type === "modified") {
+            const stampURL = change.doc.data().img;
+            drawImageOnCanvas(stampURL);
+            // console.log(stampURL);
+          }
         });
-
-        // 画像URLを追加
-        initialImageUrls.push(docData.img);
-
-        // Aグループのカウントを集計
-        if (AGroupIds.includes(docId)) {
-          AGroupCount += docCount;
-        }
-
-        // Bグループのカウントを集計
-        if (BGroupIds.includes(docId)) {
-          BGroupCount += docCount;
-        }
       });
-
-      // パーセンテージを計算
-      AGroupPercentage = (AGroupCount + BGroupCount) > 0 ? (AGroupCount / (AGroupCount + BGroupCount) * 100) : 0;
-      BGroupPercentage = (AGroupCount + BGroupCount) > 0 ? (BGroupCount / (AGroupCount + BGroupCount) * 100) : 0;
-
-      // 結果をログに出力
-      console.log('AGroupCount:', AGroupCount, 'BGroupCount:', BGroupCount);
-      console.log('AGroupPercentage:', AGroupPercentage, 'BGroupPercentage:', BGroupPercentage);
-      // console.log('Image URLs:', initialImageUrls);
-      // initialSnapshot.docs.forEach((doc) => {
-      //   const document = {
-      //     id: doc.id,
-      //     data: doc.data(),
-      //   };
-      //   initialArray.push(document);
-      // });
-
-      // console.log(initialArray);
-      // // imageUrlsを初期化しておく
-      // // const initialCounts = [];
-
-      // // initialArray.forEach(function (document, index) {
-      // //   // imageUrlsにdocument.data.imgを追加
-      // //   initialImageUrls.push(document.data.img);
-      // //   initialCounts.push(document.data.count || 0);
-      // //   // console.log(initialCounts);
-      // // });
-
-
-      // initialArray.forEach(function (document) {
-      //   initialImageUrls.push(document.data.img);
-      //   const docId = document.id;
-      //   const docCount = document.data.count || 0;
-
-      //   // Aグループのカウントを集計
-      //   if (AGroupIds.includes(docId)) {
-      //     AGroupCount += docCount;
-      //   }
-
-      //   // Bグループのカウントを集計
-      //   if (BGroupIds.includes(docId)) {
-      //     BGroupCount += docCount;
-      //   }
-      // });
-
-      let totalCount = AGroupCount + BGroupCount;
-
-      // // パーセンテージを計算
-      // AGroupPercentage = AGroupCount / (totalCount) * 100;
-      // BGroupPercentage = BGroupCount / (totalCount) * 100;
-
-      // 結果を出力または使用
-      // console.log('AGroupCount:', AGroupCount, 'BGroupCount:', BGroupCount);
-      // console.log('AGroupPercentage:', AGroupPercentage, 'BGroupPercentage:', BGroupPercentage);
-
-
 
       //----------------------------------------
       // ▼スタンプを表示する関数
@@ -365,70 +343,34 @@
         canvas.width = canvasImage.width;
         canvas.height = canvasImage.height;
       }
-
-
-
       //----------------------------------------
-      // ▼firebaseが更新されるごとに処理を実行
+      // テレビの中の座標
       //----------------------------------------
-      // let totalCount = 0;
 
-      // データ取得処理(データベース上でデータの変更が発生したタイミングで {} 内の処理を実行)
-      onSnapshot(q, (querySnapshot) => {
-        // console.log("Total Count:", totalCount);
-        totalCount = 0;
-        AGroupCount = 0;
-        BGroupCount = 0;
+      // 矩形の左上隅の座標
+      const rectX = canvas.width / 10.2;
+      const rectY = canvas.height / 17;
 
-        // 各ドキュメントのcountフィールドを合計する
-        querySnapshot.docs.forEach(doc => {
-          const docData = doc.data();
-          const docId = doc.id;
+      // 矩形の幅と高さ
+      const rectWidth = canvas.width / 1.265;
+      const rectHeight = canvas.height / 1.62;
 
+      // 矩形の描画
+      // ctx.fillStyle = 'purple';
+      // ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
 
-          // console.log(docId);
-          // docIdがAグループに属するかチェック
-          if (AGroupIds.includes(docId)) {
-            AGroupCount += docData.count || 0;
-          }
-          // docIdがBグループに属するかチェック
-          if (BGroupIds.includes(docId)) {
-            BGroupCount += docData.count || 0;
-          }
+      // 左下の座標
+      const bottomLeftX = rectX;
+      const bottomLeftY = rectY + rectHeight;
 
-          // totalCount += docData.count || 0; // 万が一countがundefinedの場合は0として扱います
-          totalCount = AGroupCount + BGroupCount;
-        });
+      // 右下の座標
+      const bottomRightX = rectX + rectWidth;
+      const bottomRightY = rectY + rectHeight;
 
-        // パーセンテージを計算
-        AGroupPercentage = totalCount > 0 ? (AGroupCount / totalCount) * 100 : 0;
-        BGroupPercentage = totalCount > 0 ? (BGroupCount / totalCount) * 100 : 0;
+      // 変数に格納
+      let bottomLeft = { x: bottomLeftX, y: bottomLeftY };
+      let bottomRight = { x: bottomRightX, y: bottomRightY };
 
-        console.log("AGroup Count:", AGroupCount);
-        console.log("BGroup Count:", BGroupCount);
-        // console.log("Total Count:", totalCount); // 合計値をコンソールに表示
-
-        querySnapshot.docChanges().forEach((change) => {
-          if (change.type === "modified") {
-            const stampURL = change.doc.data().img;
-            drawImageOnCanvas(stampURL);
-          }
-        });
-      });
-      // 各ドキュメントのcountフィールドを合計する
-      // querySnapshot.docs.forEach(doc => {
-      //   totalCount += doc.data().count || 0; // 万が一countがundefinedの場合は0として扱います
-      // });
-
-
-
-      // querySnapshot.docChanges().forEach((change) => {
-      //   if (change.type === "modified") {
-      //     const stampURL = change.doc.data().img;
-      //     drawImageOnCanvas(stampURL);
-      //   }
-      // });
-      // });
 
       //----------------------------------------
       // ▼パーセンテージのイーズインアニメーション
@@ -515,30 +457,30 @@
       // const CONSTANT_VELOCITY = 5;
 
       // clickStampが更新されたら描画するための関数
-      function drawImageOnCanvas(stampURL, stampType) {
-
+      // function drawImageOnCanvas(stampURL, stampType) {
+      function drawImageOnCanvas(stampURL) {
         const image = document.createElement('img');
         image.className = "stampMoving";
-        image.onload = function () {
+        image.onload = () => {
           //----------------------------------------
           // ▼aかbかを振り分ける
           //----------------------------------------
-          let startX;
-          if (['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8'].includes(stampType)) {
-            startX = Math.random() * 180 + 10;
+          // let startX;s
+          // if (['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8'].includes(stampType)) {
+          // startX = Math.random() * 180 + 10;
 
-          } else if (['b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8'].includes(stampType)) {
-            // ここでスタンプの最大サイズを引いて右側のスタンプが見切れないように調整します
-            const maxStampSize = 30; // スタンプの最大サイズを適切な値に設定する
-            startX = canvas.width - maxStampSize - 230 + Math.random() * 180;
-          }
+          // } else if (['b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8'].includes(stampType)) {
+          // ここでスタンプの最大サイズを引いて右側のスタンプが見切れないように調整します
+          // const maxStampSize = 30; // スタンプの最大サイズを適切な値に設定する
+          // startX = canvas.width - maxStampSize - 230 + Math.random() * 180;
+          // }
           //----------------------------------------
           // ▼基本パラメータを設定して、オブジェクトを作成
           //----------------------------------------
 
           const stampInfo = {
             image: image,
-            posX: startX,
+            posX: Math.random() * canvas.width,
             posY: -100,
             velocityX: 0,
             initialVelocityY: 0.7 + Math.random() * 3,
@@ -743,33 +685,6 @@
 
       const drawBarGraph = (AGroupPercentage, BGroupPercentage) => {
 
-        //----------------------------------------
-        // テレビの中の座標
-        //----------------------------------------
-
-        // 矩形の左上隅の座標
-        const rectX = canvas.width / 10.2;
-        const rectY = canvas.height / 17;
-
-        // 矩形の幅と高さ
-        const rectWidth = canvas.width / 1.265;
-        const rectHeight = canvas.height / 1.62;
-
-        // 矩形の描画
-        // ctx.fillStyle = 'purple';
-        // ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
-
-        // 左下の座標
-        const bottomLeftX = rectX;
-        const bottomLeftY = rectY + rectHeight;
-
-        // 右下の座標
-        const bottomRightX = rectX + rectWidth;
-        const bottomRightY = rectY + rectHeight;
-
-        // 変数に格納
-        let bottomLeft = { x: bottomLeftX, y: bottomLeftY };
-        let bottomRight = { x: bottomRightX, y: bottomRightY };
 
         // console.log('左下の座標:', bottomLeft);
         // console.log('右下の座標:', bottomRight);
@@ -830,124 +745,35 @@
       // let friction = 0.95; // 摩擦係数
       // const initialGrowthRate = 2; // 初期の成長率
 
-      // //----------------------------------------
-      // // ▼スタンプ描画関数
-      // //----------------------------------------
-      // let isAnimationRunning = false;
-
-      // // clickStampが更新されたら描画するための関数
-      // const drawImageOnCanvas = (stampURL) => {
-      //   const image = document.createElement('img');
-      //   //----------------------------------------
-      //   // ▼スタンプを配列に入れる
-      //   //----------------------------------------
-      //   let posX, posY, velocityX;
-
-      //   if (Math.random() < 0.5) {
-      //     posX = 0;
-      //     const velocities = [1, 2, 4, 6, 0];
-      //     const randomIndex = Math.floor(Math.random() * velocities.length);
-      //     velocityX = velocities[randomIndex];
-      //     posY = Math.random() * canvas.height / 4 * 3;
-      //   }
-      //   else {
-      //     posX = canvas.width;
-      //     // ランダムな速度を設定
-      //     const velocities = [-3, -5, -7, -9, -11];
-      //     const randomIndex = Math.floor(Math.random() * velocities.length);
-      //     velocityX = velocities[randomIndex];
-      //     posY = Math.random() * canvas.height / 4 * 3;
-      //   }
-
-      //   const stampInfo = {
-      //     image: image,
-      //     posX: posX,
-      //     posY: posY,
-      //     velocityX: velocityX,
-      //     velocityY: 0,
-      //     size: 0,
-      //     alpha: 1.0,
-      //     isAnimating: true,
-      //   };
-      //   stamps.push(stampInfo);
 
 
-      //   // アニメーションを開始
-      //   if (!isAnimationRunning) {
-      //     isAnimationRunning = true;
-      //     animate();
-      //   }
-      //   image.src = stampURL; // clickStampsに画像のURLを格納
-      // };
-      // //----------------------------------------
-      // // ▼スタンプアニメーションの関数
-      // //----------------------------------------
-      // const updateAndDrawStamps = () => {
-      //   for (let i = 0; i < stamps.length; i++) {
-      //     const stamp = stamps[i];
+      //----------------------------------------
+      // ▼カウントをゼロにする関数
+      //----------------------------------------
 
-      //     if (stamp.isAnimating) {
-      //       stamp.velocityX *= friction;
-      //       stamp.velocityY *= friction;
-      //       stamp.posX += stamp.velocityX;
-      //       stamp.posY += stamp.velocityY;
+      const resetCount = async () => {
 
-      //       const distanceToTarget = Math.sqrt((targetX - stamp.posX) ** 2 + (targetY - stamp.posY) ** 2);
-      //       const growthRate = initialGrowthRate * (1 + distanceToTarget / canvas.width);
+        const querySnapshot = await getDocs(q)
 
-      //       if (stamp.size < 150) {
-      //         stamp.size += growthRate;
-      //       } else if (stamp.size >= 150 && stamp.size < maxSize) {
-      //         stamp.size += growthRate;
-      //         stamp.alpha -= 0.05;
-      //       }
+        querySnapshot.forEach(async (doc) => {
 
-      //       ctx.globalAlpha = 1; // グラフの透明度を 1 に設定
-      //       // ctx.globalAlpha = stamp.alpha;
-      //       const centerX = stamp.posX + stamp.size / 2;
-      //       const centerY = stamp.posY + stamp.size / 2;
-      //       ctx.drawImage(stamp.image, centerX - stamp.size / 2, centerY - stamp.size / 2, stamp.size, stamp.size);
+          // ドキュメントのデータを取得
+          const docData = doc.data();
 
-      //       if (stamp.alpha <= 0 || stamp.size > 200) {
-      //         stamp.alpha = 0;
-      //         stamp.isAnimating = false;
-      //       };
-      //     }
-      //   }
-      // };
+          // カウントを0に設定
+          docData.count = 0;
 
-      // //----------------------------------------
-      // // 画像を読み込む
-      // //----------------------------------------
-      // const bgImage = new Image();
-      // bgImage.src = 'img/tv2.png';
+          // ドキュメントを更新
+          await updateDoc(doc.ref, docData);
 
-      // // 画像をキャンバス上に描画する関数
-      // const drawBackgroundImage = () => {
-      //   // 画像を描画
-      //   ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-      // };
-
-      // //----------------------------------------
-      // // アニメーションを開始
-      // //----------------------------------------
-      // const animate = () => {
-      //   ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
-      //   drawBarGraph(AGroupPercentage, BGroupPercentage);
-
-      //   // drawBackgroundImage();
-      //   updateAndDrawStamps();
-
-      //   if (stamps.length > 0) {
-      //     requestAnimationFrame(animate);
-      //   }
-      // };
+        });
+      };
 
 
 
-
-
-
+      // ボタンクリック時の処理
+      const resetButton = document.getElementById("resetButton");
+      resetButton.addEventListener("click", resetCount);
 
       //----------------------------------------
       // ▼点線の丸の幅を設定
