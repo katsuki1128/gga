@@ -180,8 +180,8 @@
     let BGroupPercentage = 0;
 
     // AグループとBグループのIDのリスト
-    const AGroupIds = ['Sw077n0mreVj9exRh81f', 'xrnvFgD3PCjestA64SGd', 'ZXxNNOE8iKsrg8x3UiZ8', 'hgGsPbYmVKtw1ZLxljcr'];
-    const BGroupIds = ['p1DmVCDLRcPBgpdGfTuY', 'NgLy7OAjlR6b7LF3Bfmp', 'xrnvFgD3PCjestA64SGd', 'gfYdaXfqBcumPyn5puV9'];
+    const AGroupIds = ['xrnvFgD3PCjestA64SGd', 'Sw077n0mreVj9exRh81f', 'hgGsPbYmVKtw1ZLxljcr', 'ZXxNNOE8iKsrg8x3UiZ8'];
+    const BGroupIds = ['NgLy7OAjlR6b7LF3Bfmp', 'p1DmVCDLRcPBgpdGfTuY', 'gfYdaXfqBcumPyn5puV9', 'p5s07tA6fzySQYgkNyxf'];
 
     //----------------------------------------
     // カウントとパーセンテージを計算する関数
@@ -235,14 +235,12 @@
 
     // データ取得処理(データベース上でデータの変更が発生したタイミングで {} 内の処理を実行)
     onSnapshot(q, (querySnapshot) => {
-      calculateCountsAndPercentages(querySnapshot.docs);
-      drawBarGraph(AGroupPercentage, BGroupPercentage);
-
       querySnapshot.docChanges().forEach((change) => {
         if (change.type === "modified") {
           const stampURL = change.doc.data().img;
-          drawImageOnCanvas(stampURL);
-          // console.log(stampURL);
+
+          displayImageInSlot(stampURL);
+
         }
       });
     });
@@ -289,7 +287,7 @@
     //----------------------------------------
     // ▼クリックされたスタンプのIDを取得する関数
     //----------------------------------------
-
+    let isSoundOn = true; // 音声のオン/オフを切り替えるための変数
     let isClickDisabled = false; // クリック無効フラグ
 
     // 画像要素にクリックイベントリスナーを追加
@@ -302,6 +300,8 @@
         // if (isClickDisabled) return;
 
         const stampId = initialArray[index].id; // クリックされたドキュメントのIDを取得
+        console.log(stampId);
+
         setTimeout(() => {
           stampClick(stampId);
         }, 1000);
@@ -314,384 +314,53 @@
           imageElement.classList.remove('clicked-image'); // 一定時間経過後に 'clicked-image' クラスを削除
           // isClickDisabled = false; // 一定時間後にクリックを再度有効にする
         }, 1000);
+
+        //----------------------------------------
+        // ▼サウンドの再生
+        //----------------------------------------
+        if (isSoundOn) {  // isSoundOnがtrueの場合のみ音声を再生
+          playSound(stampId);
+          // console.log(id)
+        };
       });
     });
 
     //----------------------------------------
-    // ▼canvas背景の画像の大きさを取得する関数
+    // ▼音声ファイルを再生する関数
     //----------------------------------------
 
-    let canvasImage = document.querySelector('.canvas-wrapper img');
 
-    // ウィンドウがリサイズされたときも、キャンバスのサイズを再設定する
-    window.addEventListener('resize', function () {
-      canvas.width = canvasImage.width;
-      canvas.height = canvasImage.height;
-    });
-
-    // 画像がすでに読み込まれている場合の対処
-    if (canvasImage.complete) {
-      canvas.width = canvasImage.width;
-      canvas.height = canvasImage.height;
-    }
-    //----------------------------------------
-    // テレビの中の座標
-    //----------------------------------------
-
-    // 矩形の左上隅の座標
-    const rectX = canvas.width / 10.2;
-    const rectY = canvas.height / 17;
-
-    // 矩形の幅と高さ
-    const rectWidth = canvas.width / 1.265;
-    const rectHeight = canvas.height / 1.62;
-
-    // 矩形の描画
-    // ctx.fillStyle = 'purple';
-    // ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
-
-    // 左下の座標
-    const bottomLeftX = rectX;
-    const bottomLeftY = rectY + rectHeight;
-
-    // 右下の座標
-    const bottomRightX = rectX + rectWidth;
-    const bottomRightY = rectY + rectHeight;
-
-    // 変数に格納
-    let bottomLeft = { x: bottomLeftX, y: bottomLeftY };
-    let bottomRight = { x: bottomRightX, y: bottomRightY };
-
-
-    //----------------------------------------
-    // ▼パーセンテージのイーズインアニメーション
-    //----------------------------------------
-
-    let previousAGroupPercentage = 0; // 前回のパーセンテージを保持する変数
-    let previousBGroupPercentage = 0; // 前回のBGroupPercentageを保持する変数を追加
-
-    function easeInAnimation(startValue, endValue, duration, updateFunction) {
-      let startTime = null;
-
-      function animate(time) {
-        if (!startTime) startTime = time;
-
-        let elapsedTime = time - startTime;
-        let progress = elapsedTime / duration;
-
-        if (progress > 1) progress = 1;
-
-        // イーズインの計算
-        let currentValue = startValue + (endValue - startValue) * (progress * progress);
-
-        updateFunction(currentValue);
-
-        if (progress < 1) requestAnimationFrame(animate);
-      }
-
-      requestAnimationFrame(animate);
-    }
-
-    //----------------------------------------
-    // ▼パーセンテージの表示関数
-    //----------------------------------------
-
-    function calculatePercentage() {
-      // console.log("AGroupCount", AGroupCount, "BGroupCount", BGroupCount)
-      let isFirstCall = true;
-
-      // パーセンテージの計算
-      const total = AGroupCount + BGroupCount;
-      // console.log(total)
-      AGroupPercentage = Math.round((AGroupCount / total) * 100); // 小数点を丸める
-      BGroupPercentage = 100 - AGroupPercentage;
-
-      // AGroupPercentageの新しい値のアニメーション
-      let newAGroupPercentage = Math.round((AGroupCount / total) * 100);
-
-      easeInAnimation(previousAGroupPercentage, newAGroupPercentage, 1000, function (value) {
-        document.getElementById("AGroupPercentage").innerHTML = `${Math.round(value)}<span id="Apercentage">%</span>`;
-      });
-
-      previousAGroupPercentage = newAGroupPercentage; // 前回のAGroupPercentageを更新
-
-      // BGroupPercentageの新しい値のアニメーション
-      let newBGroupPercentage = 100 - newAGroupPercentage;
-
-      easeInAnimation(previousBGroupPercentage, newBGroupPercentage, 1000, function (value) {
-        document.getElementById("BGroupPercentage").innerHTML = `${Math.round(value)}<span id="Bpercentage">%</span>`;
-      });
-
-      previousBGroupPercentage = newBGroupPercentage; // 前回のBGroupPercentageを更新
-
-      // HTML要素にパーセンテージを表示
-
-      // document.getElementById("AGroupPercentage").innerHTML = `${AGroupPercentage}<span id="Apercentage">%</span>`;
-      // document.getElementById("AGroupCount").innerHTML = `${AGroupCount}`;
-      // document.getElementById("BGroupPercentage").innerHTML = `${BGroupPercentage}<span id="Bpercentage">%</span>`;
-      // document.getElementById("BGroupCount").innerHTML = `${BGroupCount}`;
-      // console.log("AGroupPercentage", AGroupPercentage);
-      // console.log("BGroupPercentage", BGroupPercentage);
-
-    }
-    // drawImageOnCanvas(clickStamp);
-    // drawBarGraph(AGroupPercentage, BGroupPercentage);
-    // console.log(clickStamp, BGroupPercentage)
-
-    //----------------------------------------
-    // ▼スタンプ描画関数
-    //----------------------------------------
-    let isAnimationRunning = false;
-
-    const GRAVITY = 0.03; // 重力の強さ
-    const FRICTION = 0.3; // 摩擦係数
-    // const CONSTANT_VELOCITY = 5;
-
-    // clickStampが更新されたら描画するための関数
-    // function drawImageOnCanvas(stampURL, stampType) {
-    function drawImageOnCanvas(stampURL) {
-      const image = document.createElement('img');
-      image.className = "stampMoving";
-      image.onload = () => {
-
-        const stampInfo = {
-          image: image,
-          posX: Math.random() * canvas.width,
-          posY: rectY + rectHeight - image.height,
-          velocityX: 0,
-          initialVelocityY: 0.7 + Math.random() * 3,
-          velocityY: 0.3 + Math.random(),
-          size: 100,
-          sizeRate: 0.5 + Math.random() * 0.5,
-          isAnimating: true,
-          opacity: 1.0,
-        };
-        // console.log("stampInfo", stampInfo);
-        stamps.push(stampInfo);
-        // console.log(stamps.length)
-
-        // アニメーションを開始
-        if (!isAnimationRunning) {
-          isAnimationRunning = true;
-          animate();
-          // console.log(stamps.length)
-        }
+    const playSound = (id) => {
+      // const AGroupIds = ['Sw077n0mreVj9exRh81f', 'xrnvFgD3PCjestA64SGd', 'ZXxNNOE8iKsrg8x3UiZ8', 'hgGsPbYmVKtw1ZLxljcr'];
+      // const BGroupIds = ['p1DmVCDLRcPBgpdGfTuY', 'NgLy7OAjlR6b7LF3Bfmp', 'xrnvFgD3PCjestA64SGd', 'gfYdaXfqBcumPyn5puV9'];
+      const audioSet = {
+        [AGroupIds[0]]: './sound/a1.mp3',
+        [AGroupIds[1]]: './sound/a2.mp3',
+        [AGroupIds[2]]: './sound/a3.mp3',
+        [AGroupIds[3]]: './sound/a4.mp3',
+        [BGroupIds[0]]: './sound/b1.mp3',
+        [BGroupIds[1]]: './sound/b2.mp3',
+        [BGroupIds[2]]: './sound/b3.mp3',
+        [BGroupIds[3]]: './sound/b4.mp3',
       };
-      image.src = stampURL; // clickStampsに画像のURLを格納
+
+      const audioPath = audioSet[id] || './img/default.mp3'; // idが存在しない場合のデフォルト音声
+      const audio = new Audio(audioPath);
+      // console.log(audio)
+      audio.play();
     };
 
     //----------------------------------------
-    // スタンプの距離を測る関数
+    // ▼スタンプをクリックできなくする関数
     //----------------------------------------
 
-    function areStampsColliding(stamp1, stamp2) {
-      const dx = stamp1.posX - stamp2.posX;
-      const dy = stamp1.posY - stamp2.posY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      return distance < (stamp1.size + stamp2.size) / 2;
-    };
-
-    //----------------------------------------
-    // ▼アニメーション全体の関数
-    //----------------------------------------
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
-      drawBarGraph(AGroupPercentage, BGroupPercentage); // ここでグラフを再描画
-
-      for (let i = 0; i < stamps.length; i++) {
-        // 画面の半分に来たら重ならないようにする
-        if (stamps[i].posY > canvas.height / 3 * 2) {
-
-          //----------------------------------------
-          // ▼スタンプの衝突関数
-          //----------------------------------------
-          for (let j = i + 1; j < stamps.length; j++) {
-            if (areStampsColliding(stamps[i], stamps[j])) {
-
-              // スタンプが重ならないように位置を調整
-              const dx = stamps[j].posX - stamps[i].posX;
-              const dy = stamps[j].posY - stamps[i].posY;
-              const distance = Math.sqrt(dx * dx + dy * dy);
-              const overlap = (stamps[i].size / 2 + stamps[j].size / 2) - distance;
-
-              // 重なっている距離に基づいて位置を調整
-              const adjustX = (dx / distance) * overlap;
-              const adjustY = (dy / distance) * overlap;
-
-              // 位置を調整
-              const margin = 10;
-              stamps[i].posX -= adjustX / margin;
-              stamps[i].posY -= adjustY / margin;
-              stamps[j].posX += adjustX / margin;
-              stamps[j].posY += adjustY / margin;
-            }
-          }
-        }
-
-
-
-        //----------------------------------------
-        // ▼アニメーションの関数
-        //----------------------------------------
-        const stamp = stamps[i];
-        // console.log(stamps.length)
-        // const newStampSize = stamp.size * 0.5; // スタンプのサイズ
-        // const newStampSize = stamp.size * (Math.random() * 0.5 + 0.5); // スタンプのサイズ
-        const newStampSize = stamp.size * stamp.sizeRate;
-
-        if (stamp.isAnimating) {
-          stamp.posX += stamp.velocityX;
-
-          // 画面のある位置までの場合
-          if (stamp.posY <= canvas.height / 3 * 2) {
-            // 速度を一定に保つ（適切な一定の速度を設定する）
-            stamp.velocityY = stamp.initialVelocityY;
-          } else {
-            // 画面のある位置を超えた場合、重力の影響を受けて加速する
-            stamp.velocityY += (1 + GRAVITY);
-          }
-          stamp.posY += stamp.velocityY;
-          // stamp.posY += stamp.velocityY;
-          // console.log([i], "個目がアニメーション中", stamps[i].velocityY)
-
-          if (stamp.posY + newStampSize > canvas.height) {
-            stamp.posY = canvas.height - newStampSize;  // スタンプの位置をcanvasの下端に固定
-
-            // 跳ね返る時に摩擦の影響を受ける
-            stamp.velocityY = -stamp.velocityY * FRICTION;
-
-            // 速度が非常に小さい場合、ボールを止める
-
-            if (Math.abs(stamp.velocityY) < 0.5) {
-              stamp.velocityY = 0;
-              stamp.opacity -= 0.1;
-              // setTimeout(() => {
-              //     stamp.isAnimating = false;
-              // }, 1000);
-
-              // 透明度が0になったら、アニメーションを停止
-              if (stamp.opacity <= 0) {
-                stamp.opacity = 0;
-                stamp.isAnimating = false;
-              }
-
-            }
-          }
-          ctx.globalAlpha = stamp.opacity; // 透明度の設定
-
-          // スタンプを描画
-          const visibleHeight = stamp.size - (stamp.posY < 0 ? -stamp.posY : 0);  // 画面外にはみ出している部分の高さ
-          ctx.drawImage(
-            stamp.image,
-            0,
-            stamp.size - visibleHeight,
-            stamp.size, // ソース画像の幅
-            visibleHeight, // ソース画像の高さ
-            stamp.posX,
-            stamp.posY < 0 ? 0 : stamp.posY,
-            newStampSize, // 宛先キャンバス上の幅
-            newStampSize * (visibleHeight / stamp.size) // 宛先キャンバス上の高さ
-          );
-          ctx.globalAlpha = 1.0;
-        };
-      };
-      // console.log("テストdrawBarGraph")
-      if (stamps.length > 0) {
-        requestAnimationFrame(animate);
-      }
-    };
-
-    //----------------------------------------
-    // ▼棒グラフの描画関数
-    //----------------------------------------
-
-    let currentAGroupHeight = 0;
-    let currentBGroupHeight = 0;
-    const lerpRate = 0.05;  // 補完率。0.05のような小さい値でスムーズな変化を得る
-    let isFirstDraw = true;
-
-    let imageA = document.createElement('img');
-    imageA.src = './img/star_blue.jpg';
-
-    let imageB = document.createElement('img');
-    imageB.src = './img/star_red.jpg';
-    // console.log(imageA);
-
-    const drawBarGraph = (AGroupPercentage, BGroupPercentage) => {
-
-      // console.log('左下の座標:', bottomLeft);
-      // console.log('右下の座標:', bottomRight);
-
-      //----------------------------------------
-      // 棒グラフの描画
-      //----------------------------------------
-      const barWidth = canvas.height / 6;
-
-      const barX1 = canvas.width / 10.2;
-      const barX2 = canvas.width - barWidth - barWidth;
-
-      const maxCanvasPercentage = 0.5;  // これはcanvas.heightの50%を意味します。
-      const targetAGroupHeight = calculateBarHeight(AGroupPercentage, maxCanvasPercentage, canvas.height);
-      const targetBGroupHeight = calculateBarHeight(BGroupPercentage, maxCanvasPercentage, canvas.height);
-      // console.log(currentAGroupHeight);
-
-      // 現在の高さを目標の高さに近づける
-      if (isFirstDraw) {
-        currentAGroupHeight = targetAGroupHeight;
-        currentBGroupHeight = targetBGroupHeight;
-        isFirstDraw = false;
-      } else {
-        currentAGroupHeight += (targetAGroupHeight - currentAGroupHeight) * lerpRate;
-        currentBGroupHeight += (targetBGroupHeight - currentBGroupHeight) * lerpRate;
-      }
-
-      // Aグループのバーグラフのテクスチャを設定
-      let patternA = ctx.createPattern(imageA, 'repeat');
-      ctx.fillStyle = patternA;
-      // ctx.fillStyle = "#0000cc";
-      ctx.fillRect(bottomLeftX, bottomLeftY, barWidth, -currentAGroupHeight);
-      // console.log(barX1, canvas.height, barWidth, -currentAGroupHeight);
-
-      let patternB = ctx.createPattern(imageB, 'repeat');
-      ctx.fillStyle = patternB;
-      // ctx.fillStyle = '#cc0000';
-      ctx.fillRect(bottomRightX - barWidth, bottomRightY, barWidth, -currentBGroupHeight);
-
-      // // 赤い四角を描く
-      // ctx.fillStyle = 'red';
-      // ctx.fillRect(canvas.width / 10.2, canvas.height / 15, canvas.width / 1.265, canvas.height / 1.62);
-    };
-
-    const calculateBarHeight = (percentage, maxCanvasPercentage, canvasHeight) => {
-      return (percentage / 100) * maxCanvasPercentage * canvasHeight;
-    }
-
-    //----------------------------------------
-    // ▼カウントをゼロにする関数
-    //----------------------------------------
-
-    const resetCount = async () => {
-
-      const querySnapshot = await getDocs(q)
-
-      querySnapshot.forEach(async (doc) => {
-
-        // ドキュメントのデータを取得
-        const docData = doc.data();
-
-        // カウントを0に設定
-        docData.count = 0;
-
-        // ドキュメントを更新
-        await updateDoc(doc.ref, docData);
-
+    const addNeverClickableClass = () => {
+      const targetElements = document.querySelectorAll('.image');
+      // console.log(targetElements);
+      targetElements.forEach((targetElement) => {
+        targetElement.classList.add('never-clickable');
       });
     };
-
-    // ボタンクリック時の処理
-    const resetButton = document.getElementById("resetButton");
-    resetButton.addEventListener("click", resetCount);
-
     //----------------------------------------
     // ▼メッセージを出すロジックと関数
     //----------------------------------------
@@ -739,12 +408,46 @@
     }
 
     //----------------------------------------
+    // ▼点線の丸の幅を設定
+    //----------------------------------------
+    let circleSize = 110; // デフォルトのサイズ
+    let circleMargin = 10; // デフォルトのマージン
+
+    const adjustDottedCircleSize = () => {
+
+      const deviceWidth = window.innerWidth;
+      const itemWidth = (deviceWidth - 48) / 3;
+
+      let newSize = circleSize;
+      let newMargin = circleMargin;
+
+      if (itemWidth < (circleSize + 2 * circleMargin)) {
+        newSize = itemWidth * 0.9;
+        newMargin = itemWidth * 0.05;
+      }
+
+      // console.log("itemWidth", itemWidth, "circleSize", newSize)
+
+      document.querySelectorAll('.dotted-circle').forEach(circle => {
+        circle.style.width = `${newSize}px`;
+        circle.style.height = `${newSize}px`;
+        circle.style.marginLeft = `${newMargin}px`;
+        circle.style.marginRight = `${newMargin}px`;
+
+      });
+    };
+    adjustDottedCircleSize();
+    // ブラウザのリサイズイベントに応じて調整
+    window.addEventListener('resize', adjustDottedCircleSize);
+
+
+    //----------------------------------------
     // ▼クリックした画像の表示関数
     //----------------------------------------
 
-    const displayImageInSlot = (id, circleSize) => {
+    const displayImageInSlot = (stampURL, circleSize) => {
       // 画像のsrcを組み立てる
-      const src = `./img/${id}.png`;
+      const src = stampURL;
 
       // 最初の空の.image-slotを選択
       const slot = document.querySelector('.image-slot');
@@ -775,6 +478,8 @@
     document.addEventListener('dblclick', function (e) {
       e.preventDefault();
     });
+
+
 
   </script>
 </body>

@@ -170,8 +170,8 @@
     let BGroupPercentage = 0;
 
     // AグループとBグループのIDのリスト
-    const AGroupIds = ['Sw077n0mreVj9exRh81f', 'xrnvFgD3PCjestA64SGd', 'ZXxNNOE8iKsrg8x3UiZ8', 'hgGsPbYmVKtw1ZLxljcr'];
-    const BGroupIds = ['p1DmVCDLRcPBgpdGfTuY', 'NgLy7OAjlR6b7LF3Bfmp', 'xrnvFgD3PCjestA64SGd', 'gfYdaXfqBcumPyn5puV9'];
+    const AGroupIds = ['xrnvFgD3PCjestA64SGd', 'Sw077n0mreVj9exRh81f', 'hgGsPbYmVKtw1ZLxljcr', 'ZXxNNOE8iKsrg8x3UiZ8'];
+    const BGroupIds = ['NgLy7OAjlR6b7LF3Bfmp', 'p1DmVCDLRcPBgpdGfTuY', 'gfYdaXfqBcumPyn5puV9', 'p5s07tA6fzySQYgkNyxf'];
 
     //----------------------------------------
     // カウントとパーセンテージを計算する関数
@@ -205,7 +205,6 @@
       console.log('AGroupCount:', AGroupCount, 'BGroupCount:', BGroupCount);
       console.log('AGroupPercentage:', AGroupPercentage.toFixed(2), 'BGroupPercentage:', BGroupPercentage.toFixed(2));
     };
-
 
     //----------------------------------------
     // ▼最初のスタンプ画像データの読み込み
@@ -279,7 +278,7 @@
     //----------------------------------------
     // ▼クリックされたスタンプのIDを取得する関数
     //----------------------------------------
-
+    let isSoundOn = true; // 音声のオン/オフを切り替えるための変数
     let isClickDisabled = false; // クリック無効フラグ
 
     // 画像要素にクリックイベントリスナーを追加
@@ -304,8 +303,40 @@
           imageElement.classList.remove('clicked-image'); // 一定時間経過後に 'clicked-image' クラスを削除
           // isClickDisabled = false; // 一定時間後にクリックを再度有効にする
         }, 1000);
+
+
+        //----------------------------------------
+        // ▼サウンドの再生
+        //----------------------------------------
+        if (isSoundOn) {  // isSoundOnがtrueの場合のみ音声を再生
+          playSound(stampId);
+          // console.log(id)
+        };
       });
     });
+
+    //----------------------------------------
+    // ▼音声ファイルを再生する関数
+    //----------------------------------------
+    const playSound = (id) => {
+      // const AGroupIds = ['Sw077n0mreVj9exRh81f', 'xrnvFgD3PCjestA64SGd', 'ZXxNNOE8iKsrg8x3UiZ8', 'hgGsPbYmVKtw1ZLxljcr'];
+      // const BGroupIds = ['p1DmVCDLRcPBgpdGfTuY', 'NgLy7OAjlR6b7LF3Bfmp', 'xrnvFgD3PCjestA64SGd', 'gfYdaXfqBcumPyn5puV9'];
+      const audioSet = {
+        [AGroupIds[0]]: './sound/a1.mp3',
+        [AGroupIds[1]]: './sound/a2.mp3',
+        [AGroupIds[2]]: './sound/a3.mp3',
+        [AGroupIds[3]]: './sound/a4.mp3',
+        [BGroupIds[0]]: './sound/b1.mp3',
+        [BGroupIds[1]]: './sound/b2.mp3',
+        [BGroupIds[2]]: './sound/b3.mp3',
+        [BGroupIds[3]]: './sound/b4.mp3',
+      };
+
+      const audioPath = audioSet[id] || './img/default.mp3'; // idが存在しない場合のデフォルト音声
+      const audio = new Audio(audioPath);
+      // console.log(audio)
+      audio.play();
+    };
 
     //----------------------------------------
     // ▼canvas背景の画像の大きさを取得する関数
@@ -386,7 +417,7 @@
     // ▼パーセンテージの表示関数
     //----------------------------------------
 
-    function calculatePercentage() {
+    const calculatePercentage = () => {
       // console.log("AGroupCount", AGroupCount, "BGroupCount", BGroupCount)
       let isFirstCall = true;
 
@@ -484,7 +515,7 @@
     //----------------------------------------
     // ▼アニメーション全体の関数
     //----------------------------------------
-    function animate() {
+    const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
       drawBarGraph(AGroupPercentage, BGroupPercentage); // ここでグラフを再描画
 
