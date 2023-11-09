@@ -477,13 +477,13 @@
 
         const stampInfo = {
           image: image,
-          posX: Math.random() * canvas.width,
-          posY: rectY + rectHeight - image.height,
+          posX: rectX + Math.random() * rectWidth,
+          posY: rectY - image.height,
           velocityX: 0,
           initialVelocityY: 0.7 + Math.random() * 3,
           velocityY: 0.3 + Math.random(),
-          size: 100,
-          sizeRate: 0.5 + Math.random() * 0.5,
+          size: 100, // スタンプの大きさを半分にする
+          sizeRate: 0.1 + Math.random() * 0.5,
           isAnimating: true,
           opacity: 1.0,
         };
@@ -564,7 +564,7 @@
           stamp.posX += stamp.velocityX;
 
           // 画面のある位置までの場合
-          if (stamp.posY <= canvas.height / 3 * 2) {
+          if (stamp.posY <= (rectY + rectHeight) / 3 * 2) {
             // 速度を一定に保つ（適切な一定の速度を設定する）
             stamp.velocityY = stamp.initialVelocityY;
           } else {
@@ -575,14 +575,13 @@
           // stamp.posY += stamp.velocityY;
           // console.log([i], "個目がアニメーション中", stamps[i].velocityY)
 
-          if (stamp.posY + newStampSize > canvas.height) {
-            stamp.posY = canvas.height - newStampSize;  // スタンプの位置をcanvasの下端に固定
+          if (stamp.posY + newStampSize > rectY + rectHeight) {
+            stamp.posY = rectY + rectHeight - newStampSize;  // スタンプの位置をcanvasの下端に固定
 
             // 跳ね返る時に摩擦の影響を受ける
             stamp.velocityY = -stamp.velocityY * FRICTION;
 
-            // 速度が非常に小さい場合、ボールを止める
-
+            // 速度が非常に小さい場合、止める
             if (Math.abs(stamp.velocityY) < 0.5) {
               stamp.velocityY = 0;
               stamp.opacity -= 0.1;
@@ -595,7 +594,6 @@
                 stamp.opacity = 0;
                 stamp.isAnimating = false;
               }
-
             }
           }
           ctx.globalAlpha = stamp.opacity; // 透明度の設定
