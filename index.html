@@ -477,7 +477,7 @@
         const randomValue = Math.random();
 
         // posXを計算
-        let posX = rectX + Math.random() * rectWidth - (100 * (0.1 + randomValue * 0.4));
+        let posX = rectX + Math.random() * rectWidth - (100 * (0.1 + randomValue * 0.4)) - 10;
 
         // posXがrectXより小さければ、新しい値を計算する
         if (posX < rectX) {
