@@ -250,9 +250,13 @@
 
       querySnapshot.docChanges().forEach((change) => {
         if (change.type === "modified") {
-          const stampURL = change.doc.data().img;
-          drawImageOnCanvas(stampURL);
-          console.log(stampURL);
+          const newData = change.doc.data();
+          const oldData = change.doc.metadata.hasPendingWrites ? null : change.doc.data();
+          if (newData.count > (oldData ? oldData.count : 0)) {
+            // countが増えた場合のみ処理
+            const stampURL = newData.img;
+            drawImageOnCanvas(stampURL);
+          }
         }
       });
     });
@@ -351,9 +355,6 @@
       });
     });
 
-
-
-
     //----------------------------------------
     // ▼スタンプ描画関数
     //----------------------------------------
@@ -409,73 +410,70 @@
     //----------------------------------------
     // ▼アニメーション全体の関数
     //----------------------------------------
+    // スタンプのアニメーションを行う関数
+    const animateStamp = (stamp) => {
+      const newStampSize = stamp.size * stamp.sizeRate;
+
+      if (stamp.isAnimating) {
+        stamp.posX += stamp.velocityX;
+
+        // 画面の特定の位置までの場合
+        if (stamp.posY <= (rectY + rectHeight) / 3 * 2) {
+          // 速度を一定に保つ
+          stamp.velocityY = stamp.initialVelocityY;
+        } else {
+          // 画面の特定の位置を超えた場合、重力の影響を受けて加速する
+          stamp.velocityY += (1 + GRAVITY);
+        }
+        stamp.posY += stamp.velocityY;
+
+        // 跳ね返るときの処理
+        if (stamp.posY + newStampSize > rectY + rectHeight) {
+          stamp.posY = rectY + rectHeight - newStampSize; // スタンプの位置をcanvasの下端に固定
+          stamp.velocityY = -stamp.velocityY * FRICTION; // 摩擦の影響を受ける
+
+          // 速度が非常に小さい場合、止める
+          if (Math.abs(stamp.velocityY) < 0.5) {
+            stamp.velocityY = 0;
+            stamp.opacity -= 0.1;
+
+            // 透明度が0になったら、アニメーションを停止
+            if (stamp.opacity <= 0) {
+              stamp.opacity = 0;
+              stamp.isAnimating = false;
+            }
+          }
+        }
+
+        // スタンプの描画
+        ctx.globalAlpha = stamp.opacity; // 透明度の設定
+        const visibleHeight = stamp.size - (stamp.posY < rectY ? rectY - stamp.posY : 0); // rectYを超えている部分の高さ
+        ctx.drawImage(
+          stamp.image,
+          0,
+          stamp.size - visibleHeight,
+          stamp.size, // ソース画像の幅
+          visibleHeight, // ソース画像の高さ
+          stamp.posX,
+          stamp.posY < rectY ? rectY : stamp.posY, // posYがrectY未満ならrectYを使う
+          newStampSize, // 宛先キャンバス上の幅
+          newStampSize * (visibleHeight / stamp.size) // 宛先キャンバス上の高さ
+        );
+        ctx.globalAlpha = 1.0;
+      }
+    };
+
+    //----------------------------------------
+    // アニメーション全体の関数
+    //----------------------------------------
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
       drawBarGraph(AGroupPercentage, BGroupPercentage);
-      console.log("動作確認")
 
-      for (let i = 0; i < stamps.length; i++) {
-        // 画面の半分に来たら重ならないようにする
-        if (stamps[i].posY > canvas.height / 3 * 2) {
+      // 各スタンプのアニメーションを実行
+      stamps.forEach(animateStamp);
 
-        }
-        //----------------------------------------
-        // ▼アニメーションの関数
-        //----------------------------------------
-        const stamp = stamps[i];
-
-        const newStampSize = stamp.size * stamp.sizeRate;
-
-        if (stamp.isAnimating) {
-          stamp.posX += stamp.velocityX;
-
-          // 画面のある位置までの場合
-          if (stamp.posY <= (rectY + rectHeight) / 3 * 2) {
-            // 速度を一定に保つ（適切な一定の速度を設定する）
-            stamp.velocityY = stamp.initialVelocityY;
-          } else {
-            // 画面のある位置を超えた場合、重力の影響を受けて加速する
-            stamp.velocityY += (1 + GRAVITY);
-          }
-          stamp.posY += stamp.velocityY;
-
-          if (stamp.posY + newStampSize > rectY + rectHeight) {
-            stamp.posY = rectY + rectHeight - newStampSize;  // スタンプの位置をcanvasの下端に固定
-
-            // 跳ね返る時に摩擦の影響を受ける
-            stamp.velocityY = -stamp.velocityY * FRICTION;
-
-            // 速度が非常に小さい場合、止める
-            if (Math.abs(stamp.velocityY) < 0.5) {
-              stamp.velocityY = 0;
-              stamp.opacity -= 0.1;
-
-              // 透明度が0になったら、アニメーションを停止
-              if (stamp.opacity <= 0) {
-                stamp.opacity = 0;
-                stamp.isAnimating = false;
-              }
-            }
-          }
-          ctx.globalAlpha = stamp.opacity; // 透明度の設定
-
-          // スタンプを描画
-          const visibleHeight = stamp.size - (stamp.posY < rectY ? rectY - stamp.posY : 0);  // rectYを超えている部分の高さ
-          ctx.drawImage(
-            stamp.image,
-            0,
-            stamp.size - visibleHeight,
-            stamp.size, // ソース画像の幅
-            visibleHeight, // ソース画像の高さ
-            stamp.posX,
-            stamp.posY < rectY ? rectY : stamp.posY, // posYがrectY未満ならrectYを使う
-            newStampSize, // 宛先キャンバス上の幅
-            newStampSize * (visibleHeight / stamp.size) // 宛先キャンバス上の高さ
-          );
-          ctx.globalAlpha = 1.0;
-        };
-      };
-
+      // スタンプがある場合、アニメーションを継続
       if (stamps.length > 0) {
         requestAnimationFrame(animate);
       }
