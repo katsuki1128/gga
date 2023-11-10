@@ -251,12 +251,12 @@
       querySnapshot.docChanges().forEach((change) => {
         if (change.type === "modified") {
           const newData = change.doc.data();
-          const oldData = change.doc.metadata.hasPendingWrites ? null : change.doc.data();
-          if (newData.count > (oldData ? oldData.count : 0)) {
-            // countが増えた場合のみ処理
-            const stampURL = newData.img;
-            drawImageOnCanvas(stampURL);
-          }
+          // const oldData = change.doc.metadata.hasPendingWrites ? null : change.doc.data();
+          // if (newData.count > (oldData ? oldData.count : 0)) {
+          // countが増えた場合のみ処理
+          const stampURL = newData.img;
+          drawImageOnCanvas(stampURL);
+          // }
         }
       });
     });
