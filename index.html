@@ -255,7 +255,18 @@
       if (newTotalCount > previousTotalCount) {
         querySnapshot.docChanges().forEach((change) => {
           if (change.type === "modified") {
-            const newData = change.doc.data();
+            // const newData = change.doc.data();
+            let stampURL;
+
+            if (AGroupIds.includes(change.doc.id)) {
+              // AGroupのIDに基づいて画像URLを決定
+              const index = AGroupIds.indexOf(change.doc.id);
+              stampURL = `./img/a${index + 1}.png`; // a1.pngからa4.png
+            } else if (BGroupIds.includes(change.doc.id)) {
+              // BGroupのIDに基づいて画像URLを決定
+              const index = BGroupIds.indexOf(change.doc.id);
+              stampURL = `./img/b${index + 1}.png`; // b1.pngからb4.png
+            }
             // const newCountData = totalCount;
             // console.log(newCountData);
             // const oldData = change.doc.metadata.hasPendingWrites ? null : change.doc.data();
@@ -264,7 +275,7 @@
 
             // if (newData.count > (oldData ? oldData.count : 0)) {
             // countが増えた場合のみ処理
-            const stampURL = newData.img;
+            // const stampURL = newData.img;
             drawImageOnCanvas(stampURL);
             // }
           }
