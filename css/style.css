@@ -446,6 +446,10 @@ dottedcircle表示エリア
     animation: fadeInFromRight 0.5s forwards;
   }
   
+  .fade-in {
+    animation: fadeIn 0.5s forwards;
+}
+
   /************************** 
 ボタン変化エリア
 ***************************/

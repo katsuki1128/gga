@@ -1,3 +1,5 @@
+// Firebaseの初期化とFirestore、Storageの設定を行うモジュール
+
 // ▼firebaseプロジェクトとjavaScriptを連携させる
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js";
 
@@ -49,3 +51,30 @@ const db = getFirestore(app);
 const collectionName = "gga";
 
 const q = query(collection(db, collectionName), orderBy("order", "desc"));
+
+
+// 必要な変数と関数をエクスポート
+export {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp,
+    query,
+    orderBy, //データのソート
+    onSnapshot, // Firestore 上に保存されているデータを取得
+    doc,
+    deleteDoc,
+    updateDoc,
+    getDocs,
+    getDoc,
+    increment,
+    getStorage,
+    ref,
+    uploadBytes,
+    getDownloadURL,
+    app,
+    storage,
+    db,
+    collectionName,
+    q
+};
