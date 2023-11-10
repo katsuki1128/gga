@@ -515,12 +515,12 @@
     // スタンプの距離を測る関数
     //----------------------------------------
 
-    function areStampsColliding(stamp1, stamp2) {
-      const dx = stamp1.posX - stamp2.posX;
-      const dy = stamp1.posY - stamp2.posY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      return distance < (stamp1.size + stamp2.size) / 2;
-    };
+    // function areStampsColliding(stamp1, stamp2) {
+    //   const dx = stamp1.posX - stamp2.posX;
+    //   const dy = stamp1.posY - stamp2.posY;
+    //   const distance = Math.sqrt(dx * dx + dy * dy);
+    //   return distance < (stamp1.size + stamp2.size) / 2;
+    // };
 
     //----------------------------------------
     // ▼アニメーション全体の関数
@@ -536,27 +536,27 @@
           //----------------------------------------
           // ▼スタンプの衝突関数
           //----------------------------------------
-          for (let j = i + 1; j < stamps.length; j++) {
-            if (areStampsColliding(stamps[i], stamps[j])) {
+          // for (let j = i + 1; j < stamps.length; j++) {
+          //   if (areStampsColliding(stamps[i], stamps[j])) {
 
-              // スタンプが重ならないように位置を調整
-              const dx = stamps[j].posX - stamps[i].posX;
-              const dy = stamps[j].posY - stamps[i].posY;
-              const distance = Math.sqrt(dx * dx + dy * dy);
-              const overlap = (stamps[i].size / 2 + stamps[j].size / 2) - distance;
+          //     // スタンプが重ならないように位置を調整
+          //     const dx = stamps[j].posX - stamps[i].posX;
+          //     const dy = stamps[j].posY - stamps[i].posY;
+          //     const distance = Math.sqrt(dx * dx + dy * dy);
+          //     const overlap = (stamps[i].size / 2 + stamps[j].size / 2) - distance;
 
-              // 重なっている距離に基づいて位置を調整
-              const adjustX = (dx / distance) * overlap;
-              const adjustY = (dy / distance) * overlap;
+          //     // 重なっている距離に基づいて位置を調整
+          //     const adjustX = (dx / distance) * overlap;
+          //     const adjustY = (dy / distance) * overlap;
 
-              // 位置を調整
-              const margin = 10;
-              stamps[i].posX -= adjustX / margin;
-              stamps[i].posY -= adjustY / margin;
-              stamps[j].posX += adjustX / margin;
-              stamps[j].posY += adjustY / margin;
-            }
-          }
+          //     // 位置を調整
+          //     const margin = 10;
+          //     stamps[i].posX -= adjustX / margin;
+          //     stamps[i].posY -= adjustY / margin;
+          //     stamps[j].posX += adjustX / margin;
+          //     stamps[j].posY += adjustY / margin;
+          //   }
+          // }
         }
 
 
@@ -641,10 +641,10 @@
     let isFirstDraw = true;
 
     let imageA = document.createElement('img');
-    imageA.src = './img/star_blue.jpg';
+    imageA.src = './img/star_blue_small.png';
 
     let imageB = document.createElement('img');
-    imageB.src = './img/star_red.jpg';
+    imageB.src = './img/star_red_small.png';
     // console.log(imageA);
 
     const drawBarGraph = (AGroupPercentage, BGroupPercentage) => {
