@@ -47,22 +47,11 @@
     </div>
   </section>
 
-  <!-- <div> -->
-  <!-- <div class="canvas-wrapper relative z-10" style="position: relative; bottom: 50px;"> -->
-  <!-- <button id="resetButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-        clear
-      </button> -->
-  <!-- </div> -->
-  <!-- </div> -->
-  <!-- 左下のA_Groupのパーセンテージ表示 -->
-  <!-- <div id="AGroupPercentage" style="font-size: 100px; position: absolute; bottom: 21px; left: 71px;"> -->
-  <!-- </div> -->
+
+  <!-- <div class="canvas-wrapper relative z-10" style="position: relative; bottom: 50px;"></div> -->
 
   <!-- 左下のA_Groupの個数表示 -->
   <!-- <div id="AGroupCount" style="font-size: 20px"></div> -->
-
-  <!-- 右側のB_Groupのパーセンテージ表示 -->
-  <!-- <div id="BGroupPercentage" style="font-size: 100px; position: absolute; bottom: 21px; right: -55px;"></div> -->
 
   <!-- 右下のB_Groupの個数表示 -->
   <!-- <div id="BGroupCount" style="font-size: 20px; position: absolute; bottom: 0; right: 0;z-index: 5">
@@ -77,10 +66,10 @@
         <div>
           <div class="text-left">
             <p class="text-lg font-bold">
-              ⭐️スタンプをテレビに飛ばして投票！
+              ⭐️みんなでテレビにスタンプを飛ばそう！
             </p>
             <p class="text-lg font-bold">
-              ⭐️左側がA、右側がBに投票できます
+              ⭐️左側がA、右側がBに投票できます！
             </p>
             <p class="text-lg font-bold">
               ⭐️音声が出ます♪
@@ -133,7 +122,6 @@
     // クリックされたスタンプのURLを格納する配列
     //----------------------------------------
     let clickStamp = "";
-    const clickStamps = [];
     const canvas = document.getElementById('overlay');
     const ctx = canvas.getContext('2d');
     const stamps = []; // スタンプの情報を保持する配列
@@ -178,9 +166,6 @@
       AGroupPercentage = (totalCount > 0) ? (AGroupCount / totalCount) * 100 : 0;
       BGroupPercentage = (totalCount > 0) ? (BGroupCount / totalCount) * 100 : 0;
 
-      // 結果をコンソールに出力
-      // console.log('AGroupCount:', AGroupCount, 'BGroupCount:', BGroupCount);
-      // console.log('AGroupPercentage:', AGroupPercentage.toFixed(2), 'BGroupPercentage:', BGroupPercentage.toFixed(2));
     };
 
     //----------------------------------------
@@ -188,8 +173,6 @@
     //----------------------------------------
 
     const initialSnapshot = await getDocs(q);
-    // calculateCountsAndPercentages(initialSnapshot.docs);
-
     const initialArray = initialSnapshot.docs.map(doc => ({
       id: doc.id,
       data: doc.data(),
@@ -197,14 +180,12 @@
 
     const initialImageUrls = initialArray.map(doc => doc.data.img);
 
-
-
     // データ取得処理(データベース上でデータの変更が発生したタイミングで {} 内の処理を実行)
     onSnapshot(q, (querySnapshot) => {
       calculateCountsAndPercentages(querySnapshot.docs);
       // calculatePercentage();
-      drawBarGraph(AGroupPercentage, BGroupPercentage);
-
+      // drawBarGraph(AGroupPercentage, BGroupPercentage);
+      // console.log(AGroupPercentage, BGroupPercentage)
 
       querySnapshot.docChanges().forEach((change) => {
         if (change.type === "modified") {
@@ -220,84 +201,39 @@
     //----------------------------------------
 
     const imageElements = [];
-
     const renderImages = () => {
       stampListContainer.innerHTML = '';
 
       initialImageUrls.forEach((imageUrl, index) => {
+
         const imageWrapper = document.createElement('div');
         imageWrapper.className = 'image-wrapper';
 
         const imageElement = document.createElement('img');
         imageElement.src = imageUrl;
         imageElement.className = 'image';
-        imageElement.style.marginBottom = '8px';
         imageElements.push(imageElement)
-
         imageWrapper.appendChild(imageElement);
-
         stampListContainer.appendChild(imageWrapper);
       });
     }
     renderImages();
 
-    // console.log("imageElements", imageElements);
-
     //----------------------------------------
     // ▼スタンプクリック関数
     //----------------------------------------
     const stampClick = async (stampId) => {
-
       // Firebaseのクリック数を一つ増やす
       await updateDoc(doc(db, collectionName, stampId), {
         count: increment(1)
       });
       // console.log("カウントが正常に更新されましたよ。");
     };
-    //----------------------------------------
-    // ▼クリックされたスタンプのIDを取得する関数
-    //----------------------------------------
-    let isSoundOn = true; // 音声のオン/オフを切り替えるための変数
-    let isClickDisabled = false; // クリック無効フラグ
-
-    // 画像要素にクリックイベントリスナーを追加
-    imageElements.forEach((imageElement, index) => {
-      imageElement.addEventListener('click', () => {
-
-        // console.log(imageElement.src);
-
-        // クリックが無効化されている場合は処理をスキップ
-        // if (isClickDisabled) return;
-
-        const stampId = initialArray[index].id; // クリックされたドキュメントのIDを取得
-        setTimeout(() => {
-          stampClick(stampId);
-        }, 1000);
-
-        // ボタンが押された時の挙動
-        imageElement.classList.add('clicked-image'); // クリックされたら 'clicked-image' クラスを追加
-        // isClickDisabled = true; // クリックを無効化
-
-        setTimeout(() => {
-          imageElement.classList.remove('clicked-image'); // 一定時間経過後に 'clicked-image' クラスを削除
-          // isClickDisabled = false; // 一定時間後にクリックを再度有効にする
-        }, 1000);
-
-
-        //----------------------------------------
-        // ▼サウンドの再生
-        //----------------------------------------
-        if (isSoundOn) {  // isSoundOnがtrueの場合のみ音声を再生
-          playSound(stampId);
-          // console.log(id)
-        };
-      });
-    });
 
     //----------------------------------------
     // ▼音声ファイルを再生する関数
     //----------------------------------------
-    const playSound = (id) => {
+    const playSound = (stampId) => {
       // const AGroupIds = ['Sw077n0mreVj9exRh81f', 'xrnvFgD3PCjestA64SGd', 'ZXxNNOE8iKsrg8x3UiZ8', 'hgGsPbYmVKtw1ZLxljcr'];
       // const BGroupIds = ['p1DmVCDLRcPBgpdGfTuY', 'NgLy7OAjlR6b7LF3Bfmp', 'xrnvFgD3PCjestA64SGd', 'gfYdaXfqBcumPyn5puV9'];
       const audioSet = {
@@ -311,11 +247,50 @@
         [BGroupIds[3]]: './sound/b4.mp3',
       };
 
-      const audioPath = audioSet[id] || './img/default.mp3'; // idが存在しない場合のデフォルト音声
+      const audioPath = audioSet[stampId] || './img/default.mp3'; // idが存在しない場合のデフォルト音声
       const audio = new Audio(audioPath);
       // console.log(audio)
       audio.play();
     };
+
+    //----------------------------------------
+    // ▼クリックされたスタンプの関数
+    //----------------------------------------
+    // let isSoundOn = true; // 音声のオン/オフを切り替えるための変数
+    let isClickDisabled = false; // クリック無効フラグ
+
+    // 画像要素にクリックイベントリスナーを追加
+    imageElements.forEach((imageElement, index) => {
+      imageElement.addEventListener('click', () => {
+
+        // クリックが無効化されている場合は処理をスキップ
+        if (isClickDisabled) return;
+
+        const stampId = initialArray[index].id; // クリックされたドキュメントのIDを取得
+
+        setTimeout(() => {
+          stampClick(stampId);
+        }, 1000);
+
+        // クリックされたら 'clicked-image' クラスを追加
+        imageElement.classList.add('clicked-image');
+        isClickDisabled = true; // クリックを無効化
+
+        // 一定時間経過後に 'clicked-image' クラスを削除
+        setTimeout(() => {
+          imageElement.classList.remove('clicked-image');
+          isClickDisabled = false; // 一定時間後にクリックを再度有効にする
+        }, 1000);
+
+        //----------------------------------------
+        // ▼サウンドの再生
+        //----------------------------------------
+        // if (isSoundOn) {  // isSoundOnがtrueの場合のみ音声を再生
+        playSound(stampId);
+        // console.log(id)
+        // };
+      });
+    });
 
     //----------------------------------------
     // ▼canvas背景の画像の大きさを取得する関数
@@ -363,34 +338,6 @@
     let bottomRight = { x: bottomRightX, y: bottomRightY };
 
 
-    //----------------------------------------
-    // ▼パーセンテージのイーズインアニメーション
-    //----------------------------------------
-
-    let previousAGroupPercentage = 0; // 前回のパーセンテージを保持する変数
-    let previousBGroupPercentage = 0; // 前回のBGroupPercentageを保持する変数を追加
-
-    function easeInAnimation(startValue, endValue, duration, updateFunction) {
-      let startTime = null;
-
-      function animate(time) {
-        if (!startTime) startTime = time;
-
-        let elapsedTime = time - startTime;
-        let progress = elapsedTime / duration;
-
-        if (progress > 1) progress = 1;
-
-        // イーズインの計算
-        let currentValue = startValue + (endValue - startValue) * (progress * progress);
-
-        updateFunction(currentValue);
-
-        if (progress < 1) requestAnimationFrame(animate);
-      }
-
-      requestAnimationFrame(animate);
-    }
 
     //----------------------------------------
     // ▼パーセンテージの表示関数
@@ -501,63 +448,24 @@
       image.src = stampURL; // clickStampsに画像のURLを格納
     };
 
-    //----------------------------------------
-    // スタンプの距離を測る関数
-    //----------------------------------------
-
-    // function areStampsColliding(stamp1, stamp2) {
-    //   const dx = stamp1.posX - stamp2.posX;
-    //   const dy = stamp1.posY - stamp2.posY;
-    //   const distance = Math.sqrt(dx * dx + dy * dy);
-    //   return distance < (stamp1.size + stamp2.size) / 2;
-    // };
 
     //----------------------------------------
     // ▼アニメーション全体の関数
     //----------------------------------------
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
-      drawBarGraph(AGroupPercentage, BGroupPercentage); // ここでグラフを再描画
+      drawBarGraph(AGroupPercentage, BGroupPercentage);
 
       for (let i = 0; i < stamps.length; i++) {
         // 画面の半分に来たら重ならないようにする
         if (stamps[i].posY > canvas.height / 3 * 2) {
 
-          //----------------------------------------
-          // ▼スタンプの衝突関数
-          //----------------------------------------
-          // for (let j = i + 1; j < stamps.length; j++) {
-          //   if (areStampsColliding(stamps[i], stamps[j])) {
-
-          //     // スタンプが重ならないように位置を調整
-          //     const dx = stamps[j].posX - stamps[i].posX;
-          //     const dy = stamps[j].posY - stamps[i].posY;
-          //     const distance = Math.sqrt(dx * dx + dy * dy);
-          //     const overlap = (stamps[i].size / 2 + stamps[j].size / 2) - distance;
-
-          //     // 重なっている距離に基づいて位置を調整
-          //     const adjustX = (dx / distance) * overlap;
-          //     const adjustY = (dy / distance) * overlap;
-
-          //     // 位置を調整
-          //     const margin = 10;
-          //     stamps[i].posX -= adjustX / margin;
-          //     stamps[i].posY -= adjustY / margin;
-          //     stamps[j].posX += adjustX / margin;
-          //     stamps[j].posY += adjustY / margin;
-          //   }
-          // }
         }
-
-
-
         //----------------------------------------
         // ▼アニメーションの関数
         //----------------------------------------
         const stamp = stamps[i];
-        // console.log(stamps.length)
-        // const newStampSize = stamp.size * 0.5; // スタンプのサイズ
-        // const newStampSize = stamp.size * (Math.random() * 0.5 + 0.5); // スタンプのサイズ
+
         const newStampSize = stamp.size * stamp.sizeRate;
 
         if (stamp.isAnimating) {
@@ -572,8 +480,6 @@
             stamp.velocityY += (1 + GRAVITY);
           }
           stamp.posY += stamp.velocityY;
-          // stamp.posY += stamp.velocityY;
-          // console.log([i], "個目がアニメーション中", stamps[i].velocityY)
 
           if (stamp.posY + newStampSize > rectY + rectHeight) {
             stamp.posY = rectY + rectHeight - newStampSize;  // スタンプの位置をcanvasの下端に固定
@@ -585,9 +491,6 @@
             if (Math.abs(stamp.velocityY) < 0.5) {
               stamp.velocityY = 0;
               stamp.opacity -= 0.1;
-              // setTimeout(() => {
-              //     stamp.isAnimating = false;
-              // }, 1000);
 
               // 透明度が0になったら、アニメーションを停止
               if (stamp.opacity <= 0) {
@@ -599,7 +502,6 @@
           ctx.globalAlpha = stamp.opacity; // 透明度の設定
 
           // スタンプを描画
-          // const visibleHeight = stamp.size - (stamp.posY < 0 ? -stamp.posY : 0);  // 画面外にはみ出している部分の高さ
           const visibleHeight = stamp.size - (stamp.posY < rectY ? rectY - stamp.posY : 0);  // rectYを超えている部分の高さ
           ctx.drawImage(
             stamp.image,
@@ -615,7 +517,7 @@
           ctx.globalAlpha = 1.0;
         };
       };
-      // console.log("テストdrawBarGraph")
+
       if (stamps.length > 0) {
         requestAnimationFrame(animate);
       }
@@ -682,9 +584,11 @@
       // ctx.fillRect(canvas.width / 10.2, canvas.height / 15, canvas.width / 1.265, canvas.height / 1.62);
     };
 
+
     const calculateBarHeight = (percentage, maxCanvasPercentage, canvasHeight) => {
       return (percentage / 100) * maxCanvasPercentage * canvasHeight;
     }
+
 
     //----------------------------------------
     // ▼カウントをゼロにする関数
