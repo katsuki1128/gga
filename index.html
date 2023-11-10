@@ -39,7 +39,10 @@
             本番用のUI
           </button>
         </div>
+
         <canvas id="overlay"></canvas>
+        <div id="AGroupCount" style="font-size: 20px; z-index: 5"></div>
+        <div id="BGroupCount" style="font-size: 20px; z-index: 5"></div>
       </div>
     </div>
   </section>
@@ -52,19 +55,18 @@
   <!-- </div> -->
   <!-- </div> -->
   <!-- 左下のA_Groupのパーセンテージ表示 -->
-  <div id="AGroupPercentage" style="font-size: 100px; position: absolute; bottom: 21px; left: 71px;">
-  </div>
+  <!-- <div id="AGroupPercentage" style="font-size: 100px; position: absolute; bottom: 21px; left: 71px;"> -->
+  <!-- </div> -->
 
   <!-- 左下のA_Groupの個数表示 -->
-  <div id="AGroupCount" class="stampCount" style="font-size: 20px; position: absolute; bottom: 0; left: 0;z-index: 5">
-  </div>
+  <!-- <div id="AGroupCount" style="font-size: 20px"></div> -->
 
   <!-- 右側のB_Groupのパーセンテージ表示 -->
-  <div id="BGroupPercentage" style="font-size: 100px; position: absolute; bottom: 21px; right: -55px;"></div>
+  <!-- <div id="BGroupPercentage" style="font-size: 100px; position: absolute; bottom: 21px; right: -55px;"></div> -->
 
-  <!-- 右下のA_Groupの個数表示 -->
-  <div id="BGroupCount" class="stampCount" style="font-size: 20px; position: absolute; bottom: 0; right: 0;z-index: 5">
-  </div>
+  <!-- 右下のB_Groupの個数表示 -->
+  <!-- <div id="BGroupCount" style="font-size: 20px; position: absolute; bottom: 0; right: 0;z-index: 5">
+  </div> -->
 
   <!----------------------------------------------
     ⭐️注意書き
@@ -88,6 +90,7 @@
       </div>
     </div>
   </div>
+
 
   <!----------------------------------------------
     ⭐️スタンプ表示エリア
@@ -176,8 +179,8 @@
       BGroupPercentage = (totalCount > 0) ? (BGroupCount / totalCount) * 100 : 0;
 
       // 結果をコンソールに出力
-      console.log('AGroupCount:', AGroupCount, 'BGroupCount:', BGroupCount);
-      console.log('AGroupPercentage:', AGroupPercentage.toFixed(2), 'BGroupPercentage:', BGroupPercentage.toFixed(2));
+      // console.log('AGroupCount:', AGroupCount, 'BGroupCount:', BGroupCount);
+      // console.log('AGroupPercentage:', AGroupPercentage.toFixed(2), 'BGroupPercentage:', BGroupPercentage.toFixed(2));
     };
 
     //----------------------------------------
@@ -199,7 +202,9 @@
     // データ取得処理(データベース上でデータの変更が発生したタイミングで {} 内の処理を実行)
     onSnapshot(q, (querySnapshot) => {
       calculateCountsAndPercentages(querySnapshot.docs);
+      // calculatePercentage();
       drawBarGraph(AGroupPercentage, BGroupPercentage);
+
 
       querySnapshot.docChanges().forEach((change) => {
         if (change.type === "modified") {
@@ -404,34 +409,44 @@
       // AGroupPercentageの新しい値のアニメーション
       let newAGroupPercentage = Math.round((AGroupCount / total) * 100);
 
-      easeInAnimation(previousAGroupPercentage, newAGroupPercentage, 1000, function (value) {
-        document.getElementById("AGroupPercentage").innerHTML = `${Math.round(value)}<span id="Apercentage">%</span>`;
-      });
+      // easeInAnimation(previousAGroupPercentage, newAGroupPercentage, 1000, function (value) {
+      //   document.getElementById("AGroupPercentage").innerHTML = `${Math.round(value)}<span id="Apercentage">%</span>`;
+      // });
 
       previousAGroupPercentage = newAGroupPercentage; // 前回のAGroupPercentageを更新
 
       // BGroupPercentageの新しい値のアニメーション
       let newBGroupPercentage = 100 - newAGroupPercentage;
 
-      easeInAnimation(previousBGroupPercentage, newBGroupPercentage, 1000, function (value) {
-        document.getElementById("BGroupPercentage").innerHTML = `${Math.round(value)}<span id="Bpercentage">%</span>`;
-      });
+      // easeInAnimation(previousBGroupPercentage, newBGroupPercentage, 1000, function (value) {
+      //   document.getElementById("BGroupPercentage").innerHTML = `${Math.round(value)}<span id="Bpercentage">%</span>`;
+      // });
 
       previousBGroupPercentage = newBGroupPercentage; // 前回のBGroupPercentageを更新
 
       // HTML要素にパーセンテージを表示
 
       // document.getElementById("AGroupPercentage").innerHTML = `${AGroupPercentage}<span id="Apercentage">%</span>`;
-      // document.getElementById("AGroupCount").innerHTML = `${AGroupCount}`;
+      document.getElementById("AGroupCount").innerHTML = `${AGroupCount}`;
+      const aGroupCount = document.getElementById('AGroupCount');
+      aGroupCount.style.position = 'absolute';
+      aGroupCount.style.left = `${bottomLeftX * 1.05}px`;
+      aGroupCount.style.top = `${bottomLeftY * 0.88}px`;
+      // console.log(AGroupCount);
       // document.getElementById("BGroupPercentage").innerHTML = `${BGroupPercentage}<span id="Bpercentage">%</span>`;
-      // document.getElementById("BGroupCount").innerHTML = `${BGroupCount}`;
-      // console.log("AGroupPercentage", AGroupPercentage);
+      document.getElementById("BGroupCount").innerHTML = `${BGroupCount}`;
+      console.log("AGroupPercentage", AGroupPercentage);
+      const bGroupCount = document.getElementById('BGroupCount');
+      bGroupCount.style.position = 'absolute';
+      bGroupCount.style.left = `${bottomRightX * 0.98}px`;
+      bGroupCount.style.top = `${bottomRightY * 0.88}px`;
       // console.log("BGroupPercentage", BGroupPercentage);
-
     }
     // drawImageOnCanvas(clickStamp);
     // drawBarGraph(AGroupPercentage, BGroupPercentage);
     // console.log(clickStamp, BGroupPercentage)
+
+    // calculatePercentage();
 
     //----------------------------------------
     // ▼スタンプ描画関数
@@ -465,7 +480,7 @@
           // posY: rectY - image.height,
           posY: rectY - (100 * (0.1 + randomValue * 0.4)),
           velocityX: 0,
-          initialVelocityY: 0.1 + Math.random() * 1,
+          initialVelocityY: 0.1 + Math.random() * 3,
           velocityY: 0.8 + Math.random() * 2,
           size: 100,
           sizeRate: 0.1 + randomValue * 0.4,
