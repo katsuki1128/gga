@@ -41,8 +41,8 @@
         </div>
 
         <canvas id="overlay"></canvas>
-        <div id="AGroupCount" style="font-size: 20px; z-index: 5"></div>
-        <div id="BGroupCount" style="font-size: 20px; z-index: 5"></div>
+        <div id="AGroupCount" style="font-size: 20px; position: absolute; z-index: 5"></div>
+        <div id="BGroupCount" style="font-size: 20px; position: absolute; z-index: 5"></div>
       </div>
     </div>
   </section>
@@ -140,6 +140,51 @@
     const BGroupIds = ['NgLy7OAjlR6b7LF3Bfmp', 'p1DmVCDLRcPBgpdGfTuY', 'gfYdaXfqBcumPyn5puV9', 'p5s07tA6fzySQYgkNyxf'];
 
     //----------------------------------------
+    // ▼canvas背景の画像の大きさを取得する関数
+    //----------------------------------------
+
+    let canvasImage = document.querySelector('.canvas-wrapper img');
+
+    // ウィンドウがリサイズされたときも、キャンバスのサイズを再設定する
+    window.addEventListener('resize', function () {
+      canvas.width = canvasImage.width;
+      canvas.height = canvasImage.height;
+    });
+
+    // 画像がすでに読み込まれている場合の対処
+    if (canvasImage.complete) {
+      canvas.width = canvasImage.width;
+      canvas.height = canvasImage.height;
+    }
+    //----------------------------------------
+    // テレビの中の座標
+    //----------------------------------------
+
+    // 矩形の左上隅の座標
+    const rectX = canvas.width / 10.2;
+    const rectY = canvas.height / 14.5;
+
+    // 矩形の幅と高さ
+    const rectWidth = canvas.width / 1.265;
+    const rectHeight = canvas.height / 1.65;
+
+    // 矩形の描画
+    // ctx.fillStyle = 'rgba(128, 0, 128, 0.5)'; // 50%の透明度で紫色
+    // ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+
+    // 左下の座標
+    const bottomLeftX = rectX;
+    const bottomLeftY = rectY + rectHeight;
+
+    // 右下の座標
+    const bottomRightX = rectX + rectWidth;
+    const bottomRightY = rectY + rectHeight;
+
+    // 変数に格納
+    let bottomLeft = { x: bottomLeftX, y: bottomLeftY };
+    let bottomRight = { x: bottomRightX, y: bottomRightY };
+
+    //----------------------------------------
     // カウントとパーセンテージを計算する関数
     //----------------------------------------
     const calculateCountsAndPercentages = (docs) => {
@@ -163,30 +208,31 @@
 
       // 合計カウントとパーセンテージを計算
       totalCount = AGroupCount + BGroupCount;
-      AGroupPercentage = (AGroupCount / totalCount) * 100;
-      BGroupPercentage = (BGroupCount / totalCount) * 100;
+      AGroupPercentage = totalCount === 0 ? 0 : (AGroupCount / totalCount) * 100;
+      BGroupPercentage = totalCount === 0 ? 0 : (BGroupCount / totalCount) * 100;
 
+
+      // updateCountDisplay(AGroupCount, BGroupCount);
+    };
+
+    //----------------------------------------
+    // ▼カウント表示
+    //----------------------------------------
+    const updateCountDisplay = (AGroupCount, BGroupCount, bottomLeftX, bottomLeftY, bottomRightX, bottomRightY) => {
       const aGroupCount = document.getElementById('AGroupCount');
       aGroupCount.innerHTML = `${AGroupCount}`;
-      aGroupCount.style = {
-        position: 'absolute',
-        left: `${bottomLeftX * 1.05}px`,
-        top: `${bottomLeftY * 0.88}px`
-      };
-      // console.log(AGroupCount);
-      // document.getElementById("BGroupPercentage").innerHTML = `${BGroupPercentage}<span id="Bpercentage">%</span>`;
-      document.getElementById("BGroupCount").innerHTML = `${BGroupCount}`;
-      console.log("AGroupPercentage", AGroupPercentage);
+      const aGroupCountStyle = `left: ${bottomLeftX * 1.05}px; top: ${bottomLeftY * 0.88}px;`;
+      aGroupCount.setAttribute('style', aGroupCountStyle);
+
       const bGroupCount = document.getElementById('BGroupCount');
-      bGroupCount.style.position = 'absolute';
-      bGroupCount.style.left = `${bottomRightX * 0.98}px`;
-      bGroupCount.style.top = `${bottomRightY * 0.88}px`;
-    };
+      bGroupCount.innerHTML = `${BGroupCount}`;
+      const bGroupCountStyle = `left: ${bottomRightX * 0.92}px; top: ${bottomRightY * 0.88}px;`;
+      bGroupCount.setAttribute('style', bGroupCountStyle);
+    }
 
     //----------------------------------------
     // ▼最初のスタンプ画像データの読み込み
     //----------------------------------------
-
     const initialSnapshot = await getDocs(q);
     const initialArray = initialSnapshot.docs.map(doc => ({
       id: doc.id,
@@ -194,19 +240,19 @@
     }));
 
     const initialImageUrls = initialArray.map(doc => doc.data.img);
-
-    // データ取得処理(データベース上でデータの変更が発生したタイミングで {} 内の処理を実行)
+    //----------------------------------------
+    // ▼初回とFirebaseが更新されるごとに、グラフ、数字、スタンプを描画
+    //----------------------------------------
     onSnapshot(q, (querySnapshot) => {
       calculateCountsAndPercentages(querySnapshot.docs);
-      // calculatePercentage();
-      // drawBarGraph(AGroupPercentage, BGroupPercentage);
-      // console.log(AGroupPercentage, BGroupPercentage)
+      updateCountDisplay(AGroupCount, BGroupCount, bottomLeftX, bottomLeftY, bottomRightX, bottomRightY);
+      drawBarGraph(AGroupPercentage, BGroupPercentage);
 
       querySnapshot.docChanges().forEach((change) => {
         if (change.type === "modified") {
           const stampURL = change.doc.data().img;
           drawImageOnCanvas(stampURL);
-          // console.log(stampURL);
+          console.log(stampURL);
         }
       });
     });
@@ -235,22 +281,20 @@
     renderImages();
 
     //----------------------------------------
-    // ▼スタンプクリック関数
+    // ▼スタンプクリック関数 Firebaseのクリック数を一つ増やす
     //----------------------------------------
     const stampClick = async (stampId) => {
-      // Firebaseのクリック数を一つ増やす
+
       await updateDoc(doc(db, collectionName, stampId), {
         count: increment(1)
       });
-      // console.log("カウントが正常に更新されましたよ。");
+
     };
 
     //----------------------------------------
     // ▼音声ファイルを再生する関数
     //----------------------------------------
     const playSound = (stampId) => {
-      // const AGroupIds = ['Sw077n0mreVj9exRh81f', 'xrnvFgD3PCjestA64SGd', 'ZXxNNOE8iKsrg8x3UiZ8', 'hgGsPbYmVKtw1ZLxljcr'];
-      // const BGroupIds = ['p1DmVCDLRcPBgpdGfTuY', 'NgLy7OAjlR6b7LF3Bfmp', 'xrnvFgD3PCjestA64SGd', 'gfYdaXfqBcumPyn5puV9'];
       const audioSet = {
         [AGroupIds[0]]: './sound/a1.mp3',
         [AGroupIds[1]]: './sound/a2.mp3',
@@ -307,95 +351,8 @@
       });
     });
 
-    //----------------------------------------
-    // ▼canvas背景の画像の大きさを取得する関数
-    //----------------------------------------
-
-    let canvasImage = document.querySelector('.canvas-wrapper img');
-
-    // ウィンドウがリサイズされたときも、キャンバスのサイズを再設定する
-    window.addEventListener('resize', function () {
-      canvas.width = canvasImage.width;
-      canvas.height = canvasImage.height;
-    });
-
-    // 画像がすでに読み込まれている場合の対処
-    if (canvasImage.complete) {
-      canvas.width = canvasImage.width;
-      canvas.height = canvasImage.height;
-    }
-    //----------------------------------------
-    // テレビの中の座標
-    //----------------------------------------
-
-    // 矩形の左上隅の座標
-    const rectX = canvas.width / 10.2;
-    const rectY = canvas.height / 14.5;
-
-    // 矩形の幅と高さ
-    const rectWidth = canvas.width / 1.265;
-    const rectHeight = canvas.height / 1.65;
-
-    // 矩形の描画
-    // ctx.fillStyle = 'rgba(128, 0, 128, 0.5)'; // 50%の透明度で紫色
-    // ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
-
-    // 左下の座標
-    const bottomLeftX = rectX;
-    const bottomLeftY = rectY + rectHeight;
-
-    // 右下の座標
-    const bottomRightX = rectX + rectWidth;
-    const bottomRightY = rectY + rectHeight;
-
-    // 変数に格納
-    let bottomLeft = { x: bottomLeftX, y: bottomLeftY };
-    let bottomRight = { x: bottomRightX, y: bottomRightY };
 
 
-    //----------------------------------------
-    // ▼パーセンテージの表示関数
-    //----------------------------------------
-
-    // const calculatePercentage = () => {
-    //   // console.log("AGroupCount", AGroupCount, "BGroupCount", BGroupCount)
-    //   let isFirstCall = true;
-
-    //   // パーセンテージの計算
-    //   const total = AGroupCount + BGroupCount;
-    //   // console.log(total)
-    //   AGroupPercentage = Math.round((AGroupCount / total) * 100); // 小数点を丸める
-    //   BGroupPercentage = 100 - AGroupPercentage;
-
-    //   // AGroupPercentageの新しい値のアニメーション
-    //   let newAGroupPercentage = Math.round((AGroupCount / total) * 100);
-
-    //   // easeInAnimation(previousAGroupPercentage, newAGroupPercentage, 1000, function (value) {
-    //   //   document.getElementById("AGroupPercentage").innerHTML = `${Math.round(value)}<span id="Apercentage">%</span>`;
-    //   // });
-
-    //   previousAGroupPercentage = newAGroupPercentage; // 前回のAGroupPercentageを更新
-
-    //   // BGroupPercentageの新しい値のアニメーション
-    //   let newBGroupPercentage = 100 - newAGroupPercentage;
-
-    //   // easeInAnimation(previousBGroupPercentage, newBGroupPercentage, 1000, function (value) {
-    //   //   document.getElementById("BGroupPercentage").innerHTML = `${Math.round(value)}<span id="Bpercentage">%</span>`;
-    //   // });
-
-    //   previousBGroupPercentage = newBGroupPercentage; // 前回のBGroupPercentageを更新
-
-    //   // HTML要素にパーセンテージを表示
-
-    //   // document.getElementById("AGroupPercentage").innerHTML = `${AGroupPercentage}<span id="Apercentage">%</span>`;
-
-    //   // console.log("BGroupPercentage", BGroupPercentage);
-    // }
-    // // drawImageOnCanvas(clickStamp);
-    // // drawBarGraph(AGroupPercentage, BGroupPercentage);
-    // // console.log(clickStamp, BGroupPercentage)
-
-    // // calculatePercentage();
 
     //----------------------------------------
     // ▼スタンプ描画関数
@@ -455,6 +412,7 @@
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
       drawBarGraph(AGroupPercentage, BGroupPercentage);
+      console.log("動作確認")
 
       for (let i = 0; i < stamps.length; i++) {
         // 画面の半分に来たら重ならないようにする
@@ -526,11 +484,12 @@
     //----------------------------------------
     // ▼棒グラフの描画関数
     //----------------------------------------
-
+    let animationRunning = false; // アニメーション状態を制御するフラグ
+    let isFirstLoad = true;
     let currentAGroupHeight = 0;
     let currentBGroupHeight = 0;
     const lerpRate = 0.05;  // 補完率。0.05のような小さい値でスムーズな変化を得る
-    let isFirstDraw = true;
+
 
     let imageA = document.createElement('img');
     imageA.src = './img/star_blue_small.png';
@@ -540,29 +499,29 @@
     // console.log(imageA);
 
     const drawBarGraph = (AGroupPercentage, BGroupPercentage) => {
-
-      // console.log('左下の座標:', bottomLeft);
-      // console.log('右下の座標:', bottomRight);
-
       //----------------------------------------
       // 棒グラフの描画
       //----------------------------------------
-      const barWidth = canvas.height / 6;
+      const barWidth = rectWidth / 8;
 
-      const barX1 = canvas.width / 10.2;
-      const barX2 = canvas.width - barWidth - barWidth;
+      const maxCanvasPercentage = 0.95;  // これはcanvas.heightの50%を意味します。
+      const targetAGroupHeight = calculateBarHeight(AGroupPercentage, maxCanvasPercentage, rectHeight);
+      const targetBGroupHeight = calculateBarHeight(BGroupPercentage, maxCanvasPercentage, rectHeight);
+      // console.log("targetAGroupHeight", targetAGroupHeight, "currentAGroupHeight", currentAGroupHeight);
 
-      const maxCanvasPercentage = 0.5;  // これはcanvas.heightの50%を意味します。
-      const targetAGroupHeight = calculateBarHeight(AGroupPercentage, maxCanvasPercentage, canvas.height);
-      const targetBGroupHeight = calculateBarHeight(BGroupPercentage, maxCanvasPercentage, canvas.height);
-      // console.log(currentAGroupHeight);
+      // 初回読み込み時のみアニメーションを実行
+      if (isFirstLoad) {
+        currentAGroupHeight += (targetAGroupHeight - currentAGroupHeight) * lerpRate;
+        currentBGroupHeight += (targetBGroupHeight - currentBGroupHeight) * lerpRate;
 
-      // 現在の高さを目標の高さに近づける
-      if (isFirstDraw) {
-        currentAGroupHeight = targetAGroupHeight;
-        currentBGroupHeight = targetBGroupHeight;
-        isFirstDraw = false;
+        // アニメーションを続ける条件をチェック
+        if (currentAGroupHeight < targetAGroupHeight || currentBGroupHeight < targetBGroupHeight) {
+          requestAnimationFrame(() => drawBarGraph(AGroupPercentage, BGroupPercentage));
+        } else {
+          isFirstLoad = false; // 初回読み込みが完了したのでフラグを変更
+        }
       } else {
+        // 初回以外の読み込み時は直接目標値に設定
         currentAGroupHeight += (targetAGroupHeight - currentAGroupHeight) * lerpRate;
         currentBGroupHeight += (targetBGroupHeight - currentBGroupHeight) * lerpRate;
       }
@@ -572,21 +531,21 @@
       ctx.fillStyle = patternA;
       // ctx.fillStyle = "#0000cc";
       ctx.fillRect(bottomLeftX, bottomLeftY, barWidth, -currentAGroupHeight);
-      // console.log(barX1, canvas.height, barWidth, -currentAGroupHeight);
+
 
       let patternB = ctx.createPattern(imageB, 'repeat');
       ctx.fillStyle = patternB;
       // ctx.fillStyle = '#cc0000';
       ctx.fillRect(bottomRightX - barWidth, bottomRightY, barWidth, -currentBGroupHeight);
 
+
       // // 赤い四角を描く
       // ctx.fillStyle = 'red';
       // ctx.fillRect(canvas.width / 10.2, canvas.height / 15, canvas.width / 1.265, canvas.height / 1.62);
     };
 
-
-    const calculateBarHeight = (percentage, maxCanvasPercentage, canvasHeight) => {
-      return (percentage / 100) * maxCanvasPercentage * canvasHeight;
+    const calculateBarHeight = (percentage, maxCanvasPercentage, rectHeight) => {
+      return (percentage / 100) * maxCanvasPercentage * rectHeight;
     }
 
 
