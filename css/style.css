@@ -97,9 +97,34 @@ input {
 ***************************/
 
 .image-wrapper {
-  width: 23%; /* (100 - 3 * 1%) / 4 = 24% 1%は間隔を意味する。 */
-  margin: 1%;  /* 画像間の間隔。必要に応じて調整してください。 */
+  width: 21%; /* (100 - 3 * 1%) / 4 = 24% 1%は間隔を意味する。 */
+  margin: 1% ;  /* 画像間の間隔。必要に応じて調整してください。 */
 }
+
+/************************** 
+ユーザー画面 CSSエリア
+***************************/
+
+#stampWrapper {
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+/*真ん中の縦の線を表すスタイル */
+#stampWrapper:after {
+  content: "";
+  position: absolute;
+  top: 5%;
+  bottom: 5%;
+  left: 50%;
+  /* 線の幅 */
+  width: 0.5px;
+  /* 線の色 */
+  background-color: gray;
+  /* 中央に配置 */
+  /* transform: translateX(-50%); */
+}
+
 
 .image {
   width: 100%; /* 画像をコンテナの幅に合わせる */
