@@ -186,7 +186,7 @@ input {
     }
 
     100% {
-        transform: translateY(-100vh);
+        transform: translateY(-150vh);
         /* Y軸方向に画面の高さ分 (-100vh) 移動 */
     }
 }
@@ -321,6 +321,11 @@ a:hover {
     display: inline-block;
 }
 
+.canvas-wrapper .relative {
+  position: relative; /* このクラスに対してrelative positioningを明示的に指定 */
+  z-index: 1; /* z-indexを1に設定 */
+}
+
 .canvas-wrapper img {
     display: block;
     /* width: 100%; */
@@ -330,8 +335,14 @@ a:hover {
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 0; 
   }
 
+  .canvas-wrapper > div {
+    position: absolute; /* ボタンを含むdivに対して絶対位置指定 */
+    z-index: 2; /* ボタンのz-indexを高く設定 */
+  }
+  
 /************************** 
 dottedcircle表示エリア
 ***************************/
