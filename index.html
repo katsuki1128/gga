@@ -187,6 +187,8 @@
     //----------------------------------------
     // カウントとパーセンテージを計算する関数
     //----------------------------------------
+    let previousTotalCount = 0; // totalCountの以前の値を保存する変数
+
     const calculateCountsAndPercentages = (docs) => {
       // カウントをリセット
       AGroupCount = 0;
@@ -211,7 +213,7 @@
       AGroupPercentage = totalCount === 0 ? 0 : (AGroupCount / totalCount) * 100;
       BGroupPercentage = totalCount === 0 ? 0 : (BGroupCount / totalCount) * 100;
 
-
+      return totalCount;
       // updateCountDisplay(AGroupCount, BGroupCount);
     };
 
@@ -244,21 +246,33 @@
     // ▼初回とFirebaseが更新されるごとに、グラフ、数字、スタンプを描画
     //----------------------------------------
     onSnapshot(q, (querySnapshot) => {
-      calculateCountsAndPercentages(querySnapshot.docs);
+      // calculateCountsAndPercentages(querySnapshot.docs);
+      const newTotalCount = calculateCountsAndPercentages(querySnapshot.docs);
       updateCountDisplay(AGroupCount, BGroupCount, bottomLeftX, bottomLeftY, bottomRightX, bottomRightY);
       drawBarGraph(AGroupPercentage, BGroupPercentage);
 
-      querySnapshot.docChanges().forEach((change) => {
-        if (change.type === "modified") {
-          const newData = change.doc.data();
-          // const oldData = change.doc.metadata.hasPendingWrites ? null : change.doc.data();
-          // if (newData.count > (oldData ? oldData.count : 0)) {
-          // countが増えた場合のみ処理
-          const stampURL = newData.img;
-          drawImageOnCanvas(stampURL);
-          // }
-        }
-      });
+      console.log(totalCount)
+      if (newTotalCount > previousTotalCount) {
+        querySnapshot.docChanges().forEach((change) => {
+          if (change.type === "modified") {
+            const newData = change.doc.data();
+            // const newCountData = totalCount;
+            // console.log(newCountData);
+            // const oldData = change.doc.metadata.hasPendingWrites ? null : change.doc.data();
+            // console.log(newData.count)
+            // console.log(oldData)
+
+            // if (newData.count > (oldData ? oldData.count : 0)) {
+            // countが増えた場合のみ処理
+            const stampURL = newData.img;
+            drawImageOnCanvas(stampURL);
+            // }
+          }
+        });
+      }
+
+      // 現在のtotalCountを保存
+      previousTotalCount = newTotalCount;
     });
 
     //----------------------------------------
