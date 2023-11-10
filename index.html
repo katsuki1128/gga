@@ -8,7 +8,7 @@
     content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
 
-  <title>GGA2023Autumn</title>
+  <title>tvcha GGA2023 katsuki</title>
 
   <!-- CSS & Tailwind -->
   <!-- <link rel="stylesheet" href="css/reset.css" /> -->
@@ -28,12 +28,15 @@
         <div
           style="display: flex; justify-content: center; align-items: center; position: absolute; bottom: 10%; left: 0; right: 0;">
           <button id="resetButton"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mr-2">
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mr-1">
             データクリア
+          </button>
+          <button disabled class="bg-blue-200 text-white font-bold py-2 px-4 rounded-full mr-1">
+            GGA用のUI
           </button>
           <button onclick="location.href='tvcha.html'"
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4  rounded-full">
-            実際のUI
+            本番用のUI
           </button>
         </div>
         <canvas id="overlay"></canvas>
@@ -72,7 +75,10 @@
         <div>
           <div class="text-left">
             <p class="text-lg font-bold">
-              ⭐️スタンプをテレビに飛ばせます
+              ⭐️スタンプをテレビに飛ばして投票！
+            </p>
+            <p class="text-lg font-bold">
+              ⭐️左側がA、右側がBに投票できます
             </p>
             <p class="text-lg font-bold">
               ⭐️音声が出ます♪
@@ -90,11 +96,13 @@
     <div id="stampListContainer" class="flex flex-wrap justify-between p-1">
   </section>
 
+  <!-- <script type="module" src="./js/firebase.js"></script> -->
+
+  <!-- <script> -->
   <script type="module">
     //------------------------------------------
     // ▼firebaseプロジェクトとjavaScriptを連携させる
     //------------------------------------------
-
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js";
 
@@ -175,7 +183,7 @@
     // カウントとパーセンテージを計算する関数
 
     //----------------------------------------
-    const calculateCountsAndPercentages = (docs) => {
+    export const calculateCountsAndPercentages = (docs) => {
       // カウントをリセット
       AGroupCount = 0;
       BGroupCount = 0;
