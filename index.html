@@ -361,14 +361,14 @@
 
     // 矩形の左上隅の座標
     const rectX = canvas.width / 10.2;
-    const rectY = canvas.height / 17;
+    const rectY = canvas.height / 14.5;
 
     // 矩形の幅と高さ
     const rectWidth = canvas.width / 1.265;
-    const rectHeight = canvas.height / 1.62;
+    const rectHeight = canvas.height / 1.65;
 
     // 矩形の描画
-    // ctx.fillStyle = 'purple';
+    // ctx.fillStyle = 'rgba(128, 0, 128, 0.5)'; // 50%の透明度で紫色
     // ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
 
     // 左下の座標
@@ -475,15 +475,26 @@
       image.className = "stampMoving";
       image.onload = () => {
 
+        const randomValue = Math.random();
+
+        // posXを計算
+        let posX = rectX + Math.random() * rectWidth - (100 * (0.1 + randomValue * 0.4));
+
+        // posXがrectXより小さければ、新しい値を計算する
+        if (posX < rectX) {
+          posX = rectX + Math.random() * rectWidth;
+        }
+
         const stampInfo = {
           image: image,
-          posX: rectX + Math.random() * rectWidth,
-          posY: rectY - image.height,
+          posX: posX,
+          // posY: rectY - image.height,
+          posY: rectY - (100 * (0.1 + randomValue * 0.4)),
           velocityX: 0,
-          initialVelocityY: 0.7 + Math.random() * 3,
+          initialVelocityY: 0.1 + Math.random() * 1,
           velocityY: 0.3 + Math.random(),
-          size: 100, // スタンプの大きさを半分にする
-          sizeRate: 0.1 + Math.random() * 0.5,
+          size: 100,
+          sizeRate: 0.1 + randomValue * 0.4,
           isAnimating: true,
           opacity: 1.0,
         };
@@ -599,7 +610,8 @@
           ctx.globalAlpha = stamp.opacity; // 透明度の設定
 
           // スタンプを描画
-          const visibleHeight = stamp.size - (stamp.posY < 0 ? -stamp.posY : 0);  // 画面外にはみ出している部分の高さ
+          // const visibleHeight = stamp.size - (stamp.posY < 0 ? -stamp.posY : 0);  // 画面外にはみ出している部分の高さ
+          const visibleHeight = stamp.size - (stamp.posY < rectY ? rectY - stamp.posY : 0);  // rectYを超えている部分の高さ
           ctx.drawImage(
             stamp.image,
             0,
@@ -607,7 +619,7 @@
             stamp.size, // ソース画像の幅
             visibleHeight, // ソース画像の高さ
             stamp.posX,
-            stamp.posY < 0 ? 0 : stamp.posY,
+            stamp.posY < rectY ? rectY : stamp.posY, // posYがrectY未満ならrectYを使う
             newStampSize, // 宛先キャンバス上の幅
             newStampSize * (visibleHeight / stamp.size) // 宛先キャンバス上の高さ
           );
