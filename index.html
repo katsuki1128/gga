@@ -139,6 +139,16 @@
     const AGroupIds = ['xrnvFgD3PCjestA64SGd', 'Sw077n0mreVj9exRh81f', 'hgGsPbYmVKtw1ZLxljcr', 'ZXxNNOE8iKsrg8x3UiZ8'];
     const BGroupIds = ['NgLy7OAjlR6b7LF3Bfmp', 'p1DmVCDLRcPBgpdGfTuY', 'gfYdaXfqBcumPyn5puV9', 'p5s07tA6fzySQYgkNyxf'];
 
+    const imgSet = {
+      [AGroupIds[0]]: './img/a1.png',
+      [AGroupIds[1]]: './img/a2.png',
+      [AGroupIds[2]]: './img/a3.png',
+      [AGroupIds[3]]: './img/a4.png',
+      [BGroupIds[0]]: './img/b1.png',
+      [BGroupIds[1]]: './img/b2.png',
+      [BGroupIds[2]]: './img/b3.png',
+      [BGroupIds[3]]: './img/b4.png',
+    }
     //----------------------------------------
     // ▼canvas背景の画像の大きさを取得する関数
     //----------------------------------------
@@ -251,31 +261,10 @@
       updateCountDisplay(AGroupCount, BGroupCount, bottomLeftX, bottomLeftY, bottomRightX, bottomRightY);
       drawBarGraph(AGroupPercentage, BGroupPercentage);
 
-      console.log(totalCount)
       if (newTotalCount > previousTotalCount) {
         querySnapshot.docChanges().forEach((change) => {
           if (change.type === "modified") {
-            // const newData = change.doc.data();
-            let stampURL;
-
-            if (AGroupIds.includes(change.doc.id)) {
-              // AGroupのIDに基づいて画像URLを決定
-              const index = AGroupIds.indexOf(change.doc.id);
-              stampURL = `./img/a${index + 1}.png`; // a1.pngからa4.png
-            } else if (BGroupIds.includes(change.doc.id)) {
-              // BGroupのIDに基づいて画像URLを決定
-              const index = BGroupIds.indexOf(change.doc.id);
-              stampURL = `./img/b${index + 1}.png`; // b1.pngからb4.png
-            }
-            // const newCountData = totalCount;
-            // console.log(newCountData);
-            // const oldData = change.doc.metadata.hasPendingWrites ? null : change.doc.data();
-            // console.log(newData.count)
-            // console.log(oldData)
-
-            // if (newData.count > (oldData ? oldData.count : 0)) {
-            // countが増えた場合のみ処理
-            // const stampURL = newData.img;
+            const stampURL = imgSet[change.doc.id];
             drawImageOnCanvas(stampURL);
             // }
           }
@@ -317,7 +306,6 @@
       await updateDoc(doc(db, collectionName, stampId), {
         count: increment(1)
       });
-
     };
 
     //----------------------------------------
@@ -522,6 +510,7 @@
     // console.log(imageA);
 
     const drawBarGraph = (AGroupPercentage, BGroupPercentage) => {
+
       //----------------------------------------
       // 棒グラフの描画
       //----------------------------------------
@@ -534,6 +523,7 @@
 
       // 初回読み込み時のみアニメーションを実行
       if (isFirstLoad) {
+        // ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
         currentAGroupHeight += (targetAGroupHeight - currentAGroupHeight) * lerpRate;
         currentBGroupHeight += (targetBGroupHeight - currentBGroupHeight) * lerpRate;
 
@@ -541,6 +531,7 @@
         if (currentAGroupHeight < targetAGroupHeight || currentBGroupHeight < targetBGroupHeight) {
           requestAnimationFrame(() => drawBarGraph(AGroupPercentage, BGroupPercentage));
         } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
           isFirstLoad = false; // 初回読み込みが完了したのでフラグを変更
         }
       } else {
@@ -584,10 +575,8 @@
 
         // ドキュメントのデータを取得
         const docData = doc.data();
-
         // カウントを0に設定
         docData.count = 0;
-
         // ドキュメントを更新
         await updateDoc(doc.ref, docData);
 
