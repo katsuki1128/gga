@@ -236,14 +236,16 @@
     // ▼カウント表示
     //----------------------------------------
     const updateCountDisplay = (AGroupCount, BGroupCount, bottomLeftX, bottomLeftY, bottomRightX, bottomRightY) => {
+      const fontSize = rectWidth / 24;
+
       const aGroupCount = document.getElementById('AGroupCount');
       aGroupCount.innerHTML = `${AGroupCount}`;
-      const aGroupCountStyle = `left: ${bottomLeftX * 1.05}px; top: ${bottomLeftY * 0.88}px;`;
+      const aGroupCountStyle = `left: ${bottomLeftX * 1.05}px; top: ${bottomLeftY * 0.88}px; font-size: ${fontSize}px;`;
       aGroupCount.setAttribute('style', aGroupCountStyle);
 
       const bGroupCount = document.getElementById('BGroupCount');
       bGroupCount.innerHTML = `${BGroupCount}`;
-      const bGroupCountStyle = `left: ${bottomRightX * 0.92}px; top: ${bottomRightY * 0.88}px;`;
+      const bGroupCountStyle = `left: ${bottomRightX * 0.9}px; top: ${bottomRightY * 0.88}px; font-size: ${fontSize}px;`;
       bGroupCount.setAttribute('style', bGroupCountStyle);
     }
 
