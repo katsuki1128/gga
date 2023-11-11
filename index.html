@@ -25,7 +25,7 @@
     <div class="flex flex-col items-center justify-center">
       <div class="canvas-wrapper relative">
         <img src="img/tv2.png">
-        <div
+        <!-- <div
           style="display: flex; justify-content: center; align-items: center; position: absolute; bottom: 10%; left: 0; right: 0;">
           <button id="resetButton"
             class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full mr-1">
@@ -38,7 +38,7 @@
             class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4  rounded-full">
             本番用のUI
           </button>
-        </div>
+        </div> -->
 
         <canvas id="overlay"></canvas>
         <div id="AGroupCount" style="font-size: 20px; position: absolute; z-index: 5"></div>
@@ -88,6 +88,18 @@
     <div id="stampListContainer" class="flex flex-wrap justify-between p-1">
   </section>
 
+  <div style="display: flex; justify-content: center; align-items: center;" class="mx-auto bg-gray-200 py-4 px-2 ">
+    <button id="resetButton" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full mr-1">
+      データクリア
+    </button>
+    <button disabled class="bg-purple-200 text-white font-bold py-2 px-4 rounded-full mr-1">
+      GGA用のUI
+    </button>
+    <button onclick="location.href='tvcha.html'"
+      class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4  rounded-full">
+      本番用のUI
+    </button>
+  </div>
   <!-- <script type="module" src="./js/firebase.js"></script> -->
 
   <!-- <script> -->
@@ -385,12 +397,9 @@
         const randomValue = Math.random();
 
         // posXを計算
-        let posX = rectX + Math.random() * rectWidth - (100 * (0.1 + randomValue * 0.4)) - 10;
-
-        // posXがrectXより小さければ、新しい値を計算する
-        if (posX < rectX) {
-          posX = rectX + Math.random() * rectWidth;
-        }
+        let maxPosX = rectX + rectWidth - (100 * (0.1 + randomValue * 0.4));
+        let posX = rectX + Math.random() * rectWidth;
+        posX = Math.min(posX, maxPosX);
 
         const stampInfo = {
           image: image,
@@ -518,7 +527,7 @@
       const maxCanvasPercentage = 0.95;  // これはcanvas.heightの50%を意味します。
       const targetAGroupHeight = calculateBarHeight(AGroupPercentage, maxCanvasPercentage, rectHeight);
       const targetBGroupHeight = calculateBarHeight(BGroupPercentage, maxCanvasPercentage, rectHeight);
-      console.log("targetAGroupHeight", targetAGroupHeight, "currentAGroupHeight", currentAGroupHeight);
+      // console.log("targetAGroupHeight", targetAGroupHeight, "currentAGroupHeight", currentAGroupHeight);
 
       // 初回読み込み時のみアニメーションを実行
       if (isFirstLoad) {
@@ -528,10 +537,11 @@
 
         // アニメーションを続ける条件をチェック
         if (currentAGroupHeight < targetAGroupHeight * 0.95 || currentBGroupHeight < targetBGroupHeight * 0.95) {
-          console.log("requestAnimationFrame");
+          // console.log("requestAnimationFrame");
           requestAnimationFrame(() => drawBarGraph(AGroupPercentage, BGroupPercentage));
         } else {
           ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
+          console.log("ctx.clearRect")
           isFirstLoad = false; // 初回読み込みが完了したのでフラグを変更
         }
       } else {
