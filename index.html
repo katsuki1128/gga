@@ -42,13 +42,13 @@
       <div class="px-2 py-2 space-y-2 md:space-y-2 sm:p-2">
         <div>
           <div class="text-left">
-            <p class="text-lg font-bold">
+            <p class="text-lg font-bold truncate">
               ⭐️みんなでテレビにスタンプを飛ばそう！
             </p>
-            <p class="text-lg font-bold">
+            <p class="text-lg font-bold truncate">
               ⭐️左側がA、右側がBに投票できます！
             </p>
-            <p class="text-lg font-bold">
+            <p class="text-lg font-bold truncate">
               ⭐️音声が出ます♪
             </p>
           </div>
@@ -65,18 +65,23 @@
     <div id="stampListContainer" class="flex flex-wrap justify-between p-1">
   </section>
 
-  <div style="display: flex; justify-content: center; align-items: center;" class="mx-auto bg-gray-200 py-4 px-2 ">
-    <button id="resetButton" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full mr-1">
+  <!----------------------------------------------
+    ⭐️ボタンエリア
+    ------------------------------------------------->
+  <div class="flex justify-between items-center bg-gray-200 p-4">
+    <button id="resetButton"
+      class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full w-32 truncate">
       データクリア
     </button>
-    <button disabled class="bg-purple-200 text-white font-bold py-2 px-4 rounded-full mr-1">
+    <button disabled class="bg-purple-200 text-white font-bold py-2 px-4 rounded-full w-32 truncate">
       GGA用のUI
     </button>
     <button onclick="location.href='tvcha.html'"
-      class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4  rounded-full">
+      class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full w-32 truncate">
       本番用のUI
     </button>
   </div>
+
   <!-- <script type="module" src="./js/firebase.js"></script> -->
 
   <!-- <script> -->
@@ -492,23 +497,24 @@
       // console.log(stamps.length);
 
       // スタンプがある場合、アニメーションを継続
-      // if (stamps.length > 0) {
-      //   requestAnimationFrame(animate);
-      // }
-      // 少なくとも一つのスタンプがアニメーション中であれば、アニメーションを継続
-      const isAnyStampAnimating = stamps.some(stamp => stamp.isAnimating);
-
-      if (isAnyStampAnimating) {
+      if (stamps.length > 0) {
         requestAnimationFrame(animate);
-      } else {
-        isAnimationRunning = false; // アニメーションがすべて終了したことを示す
       }
+      // 少なくとも一つのスタンプがアニメーション中であれば、アニメーションを継続
+      // const isAnyStampAnimating = stamps.some(stamp => stamp.isAnimating);
+
+      // if (isAnyStampAnimating ) {
+      //   console.log(isAnimationRunning, barGraphanimating)
+      //   requestAnimationFrame(animate);
+      // } else {
+      //   isAnimationRunning = false; // アニメーションがすべて終了したことを示す
+      // }
     };
 
     //----------------------------------------
     // ▼棒グラフの描画関数
     //----------------------------------------
-    // let animationRunning = false; // アニメーション状態を制御するフラグ
+    // let barGraphanimating = true; // 棒グラフのアニメーション状態を制御するフラグ
     let isFirstLoad = true;
     let currentAGroupHeight = 0;
     let currentBGroupHeight = 0;
@@ -552,6 +558,13 @@
         // 初回以外の読み込み時
         currentAGroupHeight += (targetAGroupHeight - currentAGroupHeight) * lerpRate;
         currentBGroupHeight += (targetBGroupHeight - currentBGroupHeight) * lerpRate;
+
+        // if (currentAGroupHeight < targetAGroupHeight * 0.95 || currentBGroupHeight < targetBGroupHeight * 0.95) {
+        //   requestAnimationFrame(() => drawBarGraph(AGroupPercentage, BGroupPercentage));
+        // } else {
+        //   console.log(barGraphanimating)
+        //   barGraphanimating = false; // 初回読み込みが完了したのでフラグを変更
+        // }
       }
 
       // Aグループのバーグラフのテクスチャを設定
