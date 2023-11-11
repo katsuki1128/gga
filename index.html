@@ -25,20 +25,6 @@
     <div class="flex flex-col items-center justify-center">
       <div class="canvas-wrapper relative">
         <img src="img/tv2.png">
-        <!-- <div
-          style="display: flex; justify-content: center; align-items: center; position: absolute; bottom: 10%; left: 0; right: 0;">
-          <button id="resetButton"
-            class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full mr-1">
-            データクリア
-          </button>
-          <button disabled class="bg-purple-200 text-white font-bold py-2 px-4 rounded-full mr-1">
-            GGA用のUI
-          </button>
-          <button onclick="location.href='tvcha.html'"
-            class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4  rounded-full">
-            本番用のUI
-          </button>
-        </div> -->
 
         <canvas id="overlay"></canvas>
         <div id="AGroupCount" style="font-size: 20px; position: absolute; z-index: 5"></div>
@@ -48,20 +34,11 @@
   </section>
 
 
-  <!-- <div class="canvas-wrapper relative z-10" style="position: relative; bottom: 50px;"></div> -->
-
-  <!-- 左下のA_Groupの個数表示 -->
-  <!-- <div id="AGroupCount" style="font-size: 20px"></div> -->
-
-  <!-- 右下のB_Groupの個数表示 -->
-  <!-- <div id="BGroupCount" style="font-size: 20px; position: absolute; bottom: 0; right: 0;z-index: 5">
-  </div> -->
-
   <!----------------------------------------------
     ⭐️注意書き
     ------------------------------------------------->
-  <div class="flex flex-col items-center justify-center px-2 py-2 mx-auto bg-gray-200 rounded-lg shadow-lg">
-    <div class="w-full bg-white rounded-lg shadow-md sm:max-w-3xl md:w-4/5 xl:p-0">
+  <div class="flex flex-col items-center justify-center px-2 py-2 mx-auto bg-gray-200">
+    <div class="w-full bg-white rounded-lg sm:max-w-3xl md:w-4/5 xl:p-0">
       <div class="px-2 py-2 space-y-2 md:space-y-2 sm:p-2">
         <div>
           <div class="text-left">
@@ -171,6 +148,22 @@
     window.addEventListener('resize', function () {
       canvas.width = canvasImage.width;
       canvas.height = canvasImage.height;
+
+      // 矩形の位置とサイズを再計算
+      rectX = canvas.width / 10.2;
+      rectY = canvas.height / 14.5;
+      rectWidth = canvas.width / 1.265;
+      rectHeight = canvas.height / 1.65;
+
+      // 左下と右下の座標を再計算
+      bottomLeftX = rectX;
+      bottomLeftY = rectY + rectHeight;
+      bottomRightX = rectX + rectWidth;
+      bottomRightY = rectY + rectHeight;
+
+      // 棒グラフの描画を更新
+      drawBarGraph(AGroupPercentage, BGroupPercentage);
+      updateCountDisplay(AGroupCount, BGroupCount, bottomLeftX, bottomLeftY, bottomRightX, bottomRightY);
     });
 
     // 画像がすでに読み込まれている場合の対処
@@ -183,24 +176,24 @@
     //----------------------------------------
 
     // 矩形の左上隅の座標
-    const rectX = canvas.width / 10.2;
-    const rectY = canvas.height / 14.5;
+    let rectX = canvas.width / 10.2;
+    let rectY = canvas.height / 14.5;
 
     // 矩形の幅と高さ
-    const rectWidth = canvas.width / 1.265;
-    const rectHeight = canvas.height / 1.65;
+    let rectWidth = canvas.width / 1.265;
+    let rectHeight = canvas.height / 1.65;
 
     // 矩形の描画
     // ctx.fillStyle = 'rgba(128, 0, 128, 0.5)'; // 50%の透明度で紫色
     // ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
 
     // 左下の座標
-    const bottomLeftX = rectX;
-    const bottomLeftY = rectY + rectHeight;
+    let bottomLeftX = rectX;
+    let bottomLeftY = rectY + rectHeight;
 
     // 右下の座標
-    const bottomRightX = rectX + rectWidth;
-    const bottomRightY = rectY + rectHeight;
+    let bottomRightX = rectX + rectWidth;
+    let bottomRightY = rectY + rectHeight;
 
     // 変数に格納
     let bottomLeft = { x: bottomLeftX, y: bottomLeftY };
@@ -494,10 +487,19 @@
 
       // 各スタンプのアニメーションを実行
       stamps.forEach(animateStamp);
+      // console.log(stamps.length);
 
       // スタンプがある場合、アニメーションを継続
-      if (stamps.length > 0) {
+      // if (stamps.length > 0) {
+      //   requestAnimationFrame(animate);
+      // }
+      // 少なくとも一つのスタンプがアニメーション中であれば、アニメーションを継続
+      const isAnyStampAnimating = stamps.some(stamp => stamp.isAnimating);
+
+      if (isAnyStampAnimating) {
         requestAnimationFrame(animate);
+      } else {
+        isAnimationRunning = false; // アニメーションがすべて終了したことを示す
       }
     };
 
@@ -518,7 +520,7 @@
     // console.log(imageA);
 
     const drawBarGraph = (AGroupPercentage, BGroupPercentage) => {
-      console.log(isFirstLoad);
+      // console.log(isFirstLoad);
       //----------------------------------------
       // 棒グラフの描画
       //----------------------------------------
