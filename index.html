@@ -495,12 +495,11 @@
     //----------------------------------------
     // ▼棒グラフの描画関数
     //----------------------------------------
-    let animationRunning = false; // アニメーション状態を制御するフラグ
+    // let animationRunning = false; // アニメーション状態を制御するフラグ
     let isFirstLoad = true;
     let currentAGroupHeight = 0;
     let currentBGroupHeight = 0;
     const lerpRate = 0.05;  // 補完率。0.05のような小さい値でスムーズな変化を得る
-
 
     let imageA = document.createElement('img');
     imageA.src = './img/star_blue_small.png';
@@ -510,7 +509,7 @@
     // console.log(imageA);
 
     const drawBarGraph = (AGroupPercentage, BGroupPercentage) => {
-
+      console.log(isFirstLoad);
       //----------------------------------------
       // 棒グラフの描画
       //----------------------------------------
@@ -519,7 +518,7 @@
       const maxCanvasPercentage = 0.95;  // これはcanvas.heightの50%を意味します。
       const targetAGroupHeight = calculateBarHeight(AGroupPercentage, maxCanvasPercentage, rectHeight);
       const targetBGroupHeight = calculateBarHeight(BGroupPercentage, maxCanvasPercentage, rectHeight);
-      // console.log("targetAGroupHeight", targetAGroupHeight, "currentAGroupHeight", currentAGroupHeight);
+      console.log("targetAGroupHeight", targetAGroupHeight, "currentAGroupHeight", currentAGroupHeight);
 
       // 初回読み込み時のみアニメーションを実行
       if (isFirstLoad) {
@@ -528,14 +527,15 @@
         currentBGroupHeight += (targetBGroupHeight - currentBGroupHeight) * lerpRate;
 
         // アニメーションを続ける条件をチェック
-        if (currentAGroupHeight < targetAGroupHeight || currentBGroupHeight < targetBGroupHeight) {
+        if (currentAGroupHeight < targetAGroupHeight * 0.95 || currentBGroupHeight < targetBGroupHeight * 0.95) {
+          console.log("requestAnimationFrame");
           requestAnimationFrame(() => drawBarGraph(AGroupPercentage, BGroupPercentage));
         } else {
           ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
           isFirstLoad = false; // 初回読み込みが完了したのでフラグを変更
         }
       } else {
-        // 初回以外の読み込み時は直接目標値に設定
+        // 初回以外の読み込み時
         currentAGroupHeight += (targetAGroupHeight - currentAGroupHeight) * lerpRate;
         currentBGroupHeight += (targetBGroupHeight - currentBGroupHeight) * lerpRate;
       }
