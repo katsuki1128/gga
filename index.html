@@ -391,7 +391,8 @@
     // clickStampが更新されたら描画するための関数
     function drawImageOnCanvas(stampURL) {
       const image = document.createElement('img');
-      image.className = "stampMoving";
+      image.src = stampURL; // clickStampsに画像のURLを格納
+      // image.className = "stampMoving";
       image.onload = () => {
 
         const randomValue = Math.random();
@@ -425,7 +426,7 @@
           // console.log(stamps.length)
         }
       };
-      image.src = stampURL; // clickStampsに画像のURLを格納
+
     };
 
 
@@ -528,7 +529,7 @@
     // console.log(imageA);
 
     const drawBarGraph = (AGroupPercentage, BGroupPercentage) => {
-      // console.log(isFirstLoad);
+      // console.log("barGraphAnimatingtest");
       //----------------------------------------
       // 棒グラフの描画
       //----------------------------------------
@@ -558,7 +559,17 @@
         // 初回以外の読み込み時
         currentAGroupHeight += (targetAGroupHeight - currentAGroupHeight) * lerpRate;
         currentBGroupHeight += (targetBGroupHeight - currentBGroupHeight) * lerpRate;
+        // console.log("targetAGroupHeight", targetAGroupHeight, "currentAGroupHeight", currentAGroupHeight);
 
+        // console.log("check01");
+
+        // if (!(currentAGroupHeight < targetAGroupHeight * 1.05 && currentAGroupHeight > targetAGroupHeight * 0.95) ||
+        //   !(currentBGroupHeight < targetBGroupHeight * 1.05 && currentBGroupHeight > targetBGroupHeight * 0.95)) {
+
+        //   requestAnimationFrame(() => drawBarGraph(AGroupPercentage, BGroupPercentage));
+
+        //   console.log("A:", ((currentAGroupHeight / targetAGroupHeight) * 100).toFixed(2), "B:", ((currentBGroupHeight / targetBGroupHeight) * 100).toFixed(2));
+        // }
         // if (currentAGroupHeight < targetAGroupHeight * 0.95 || currentBGroupHeight < targetBGroupHeight * 0.95) {
         //   requestAnimationFrame(() => drawBarGraph(AGroupPercentage, BGroupPercentage));
         // } else {
@@ -566,7 +577,7 @@
         //   barGraphanimating = false; // 初回読み込みが完了したのでフラグを変更
         // }
       }
-
+      // ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
       // Aグループのバーグラフのテクスチャを設定
       let patternA = ctx.createPattern(imageA, 'repeat');
       ctx.fillStyle = patternA;
