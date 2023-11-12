@@ -267,24 +267,58 @@
     //----------------------------------------
     // ▼初回とFirebaseが更新されるごとに、グラフ、数字、スタンプを描画
     //----------------------------------------
-    onSnapshot(q, (querySnapshot) => {
-      // calculateCountsAndPercentages(querySnapshot.docs);
+    // 不要な重複呼び出しを防ぐフラグ変数
+    let animationCallActive = false;
+
+    onSnapshot(q, async (querySnapshot) => {
       const newTotalCount = calculateCountsAndPercentages(querySnapshot.docs);
       updateCountDisplay(AGroupCount, BGroupCount, bottomLeftX, bottomLeftY, bottomRightX, bottomRightY);
-      drawBarGraph(AGroupPercentage, BGroupPercentage);
+
+      // console.log(newTotalCount, previousTotalCount)
 
       if (newTotalCount > previousTotalCount) {
+        // console.log("動作確認")
+        // プロミスを格納するための配列
+        let promises = [];
+
         querySnapshot.docChanges().forEach((change) => {
           if (change.type === "modified") {
             const stampURL = imgSet[change.doc.id];
-            drawImageOnCanvas(stampURL);
-            // }
+            const promise = setImageConfigue(stampURL);
+            promises.push(promise);
           }
         });
+
+        // すべてのプロミスが解決されるのを待つ
+        await Promise.all(promises);
+        // console.log(promises);
+        // すべての処理が完了した後に animate を呼び出す
+        if (!animationCallActive) {
+          animationCallActive = true;
+          animate();
+        }
       }
 
+      if (newTotalCount === 0) {
+        console.log("動作確認")
+        // プロミスを格納するための配列
+
+        // すべての処理が完了した後に animate を呼び出す
+        if (!animationCallActive) {
+          animationCallActive = true;
+          animate();
+        }
+      }
       // 現在のtotalCountを保存
       previousTotalCount = newTotalCount;
+      // console.log(newTotalCount, previousTotalCount)
+      // アニメーションを開始
+      // if (!animationCallActive) {
+      //   // animationCallActive = true;
+      //   animate();
+      //   console.log("animationCallActive02", animationCallActive);
+      //   console.log("動作確認02")
+      // }
     });
 
     //----------------------------------------
@@ -362,7 +396,7 @@
 
         // クリックされたら 'clicked-image' クラスを追加
         imageElement.classList.add('clicked-image');
-        isClickDisabled = true; // クリックを無効化
+        // isClickDisabled = true; // クリックを無効化
 
         // 一定時間経過後に 'clicked-image' クラスを削除
         setTimeout(() => {
@@ -374,7 +408,7 @@
         // ▼サウンドの再生
         //----------------------------------------
         // if (isSoundOn) {  // isSoundOnがtrueの場合のみ音声を再生
-        playSound(stampId);
+        // playSound(stampId);
         // console.log(id)
         // };
       });
@@ -383,49 +417,46 @@
     //----------------------------------------
     // ▼スタンプ描画関数
     //----------------------------------------
-    let isAnimationRunning = false;
+    // // 不要な重複呼び出しを防ぐフラグ変数
+    // let animationCallActive = false;
 
     const GRAVITY = 0.03; // 重力の強さ
     const FRICTION = 0.3; // 摩擦係数
 
     // clickStampが更新されたら描画するための関数
-    function drawImageOnCanvas(stampURL) {
-      const image = document.createElement('img');
-      image.src = stampURL; // clickStampsに画像のURLを格納
-      // image.className = "stampMoving";
-      image.onload = () => {
+    const setImageConfigue = async (stampURL) => {
+      return new Promise((resolve) => {
+        const image = document.createElement('img');
+        image.src = stampURL; // clickStampsに画像のURLを格納
+        image.onload = () => {
 
-        const randomValue = Math.random();
+          const randomValue = Math.random();
 
-        // posXを計算
-        let maxPosX = rectX + rectWidth - (100 * (0.1 + randomValue * 0.4));
-        let posX = rectX + Math.random() * rectWidth;
-        posX = Math.min(posX, maxPosX);
+          // posXを計算
+          let maxPosX = rectX + rectWidth - (100 * (0.1 + randomValue * 0.4));
+          let posX = rectX + Math.random() * rectWidth;
+          posX = Math.min(posX, maxPosX);
 
-        const stampInfo = {
-          image: image,
-          posX: posX,
-          // posY: rectY - image.height,
-          posY: rectY - (100 * (0.1 + randomValue * 0.4)),
-          velocityX: 0,
-          initialVelocityY: 1 + Math.random() * 3,
-          velocityY: 0,
-          size: 100,
-          sizeRate: 0.1 + randomValue * 0.4,
-          isAnimating: true,
-          opacity: 1.0,
+          const stampInfo = {
+            image: image,
+            posX: posX,
+            posY: rectY - (100 * (0.1 + randomValue * 0.4)),
+            velocityX: 0,
+            initialVelocityY: 1 + Math.random() * 3,
+            velocityY: 0,
+            size: 100,
+            sizeRate: 0.1 + randomValue * 0.4,
+            isAnimating: true,
+            opacity: 1.0,
+          };
+          // console.log("stampInfo", stampInfo);
+          stamps.push(stampInfo);
+          // console.log(stamps.length);
+
+          resolve(image); // プロミスを解決
         };
-        // console.log("stampInfo", stampInfo);
-        stamps.push(stampInfo);
-        // console.log(stamps.length)
 
-        // アニメーションを開始
-        if (!isAnimationRunning) {
-          isAnimationRunning = true;
-          animate();
-          // console.log(stamps.length)
-        }
-      };
+      });
 
     };
 
@@ -461,7 +492,7 @@
             stamp.opacity -= 0.1;
 
             // 透明度が0になったら、アニメーションを停止
-            if (stamp.opacity <= 0) {
+            if (stamp.opacity <= 0.1) {
               stamp.opacity = 0;
               stamp.isAnimating = false;
             }
@@ -470,6 +501,7 @@
 
         // スタンプの描画
         ctx.globalAlpha = stamp.opacity; // 透明度の設定
+
         const visibleHeight = stamp.size - (stamp.posY < rectY ? rectY - stamp.posY : 0); // rectYを超えている部分の高さ
         ctx.drawImage(
           stamp.image,
@@ -489,6 +521,8 @@
     //----------------------------------------
     // アニメーション全体の関数
     //----------------------------------------
+    let barGraphAnimating = true; // 棒グラフのアニメーション状態を制御するフラグ
+
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
       drawBarGraph(AGroupPercentage, BGroupPercentage);
@@ -498,14 +532,20 @@
       // console.log(stamps.length);
 
       // スタンプがある場合、アニメーションを継続
-      if (stamps.length > 0) {
-        requestAnimationFrame(animate);
-      }
+      // if (stamps.length > 0) {
+      //   requestAnimationFrame(animate);
+      // }
       // 少なくとも一つのスタンプがアニメーション中であれば、アニメーションを継続
-      // const isAnyStampAnimating = stamps.some(stamp => stamp.isAnimating);
+      const animatingStamps = stamps.filter(stamp => stamp.isAnimating);
+      console.log("動くスタンプ", animatingStamps.length);
 
-      // if (isAnyStampAnimating ) {
-      //   console.log(isAnimationRunning, barGraphanimating)
+      if (animatingStamps.length > 0) {
+        requestAnimationFrame(animate);
+      } else {
+        animationCallActive = false;
+      }
+      // if (isAnyStampAnimating) {
+      //   console.log(isAnimationRunning)
       //   requestAnimationFrame(animate);
       // } else {
       //   isAnimationRunning = false; // アニメーションがすべて終了したことを示す
@@ -515,7 +555,7 @@
     //----------------------------------------
     // ▼棒グラフの描画関数
     //----------------------------------------
-    // let barGraphanimating = true; // 棒グラフのアニメーション状態を制御するフラグ
+
     let isFirstLoad = true;
     let currentAGroupHeight = 0;
     let currentBGroupHeight = 0;
@@ -563,19 +603,11 @@
 
         // console.log("check01");
 
-        // if (!(currentAGroupHeight < targetAGroupHeight * 1.05 && currentAGroupHeight > targetAGroupHeight * 0.95) ||
-        //   !(currentBGroupHeight < targetBGroupHeight * 1.05 && currentBGroupHeight > targetBGroupHeight * 0.95)) {
-
-        //   requestAnimationFrame(() => drawBarGraph(AGroupPercentage, BGroupPercentage));
-
-        //   console.log("A:", ((currentAGroupHeight / targetAGroupHeight) * 100).toFixed(2), "B:", ((currentBGroupHeight / targetBGroupHeight) * 100).toFixed(2));
-        // }
-        // if (currentAGroupHeight < targetAGroupHeight * 0.95 || currentBGroupHeight < targetBGroupHeight * 0.95) {
-        //   requestAnimationFrame(() => drawBarGraph(AGroupPercentage, BGroupPercentage));
-        // } else {
-        //   console.log(barGraphanimating)
-        //   barGraphanimating = false; // 初回読み込みが完了したのでフラグを変更
-        // }
+        if ((currentAGroupHeight < targetAGroupHeight * 1.05 && currentAGroupHeight > targetAGroupHeight * 0.95) &&
+          (currentBGroupHeight < targetBGroupHeight * 1.05 && currentBGroupHeight > targetBGroupHeight * 0.95)) {
+          barGraphAnimating = false;
+          // console.log("A:", ((currentAGroupHeight / targetAGroupHeight) * 100).toFixed(2), "B:", ((currentBGroupHeight / targetBGroupHeight) * 100).toFixed(2));
+        };
       }
       // ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
       // Aグループのバーグラフのテクスチャを設定
