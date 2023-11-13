@@ -166,6 +166,11 @@
       bottomRightX = rectX + rectWidth;
       bottomRightY = rectY + rectHeight;
 
+      // 棒グラフの高さを再計算
+      const maxCanvasPercentage = 0.95;
+      currentAGroupHeight = calculateBarHeight(AGroupPercentage, maxCanvasPercentage, rectHeight);
+      currentBGroupHeight = calculateBarHeight(BGroupPercentage, maxCanvasPercentage, rectHeight);
+
       // 棒グラフの描画を更新
       drawBarGraph(AGroupPercentage, BGroupPercentage);
       updateCountDisplay(AGroupCount, BGroupCount, bottomLeftX, bottomLeftY, bottomRightX, bottomRightY);
@@ -581,41 +586,6 @@
         }
       }
 
-      // 初回読み込み時のみアニメーションを実行
-      // if (isFirstLoad) {
-      //   console.log(barGraphAnimating)
-      //   // ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
-      //   currentAGroupHeight += (targetAGroupHeight - currentAGroupHeight) * lerpRate;
-      //   currentBGroupHeight += (targetBGroupHeight - currentBGroupHeight) * lerpRate;
-
-      //   // アニメーションを続ける条件をチェック
-      //   if (currentAGroupHeight > targetAGroupHeight * 0.95 || currentBGroupHeight > targetBGroupHeight * 0.95) {
-      //     ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
-      //     console.log("ctx.clearRect")
-      //     isFirstLoad = false; // 初回読み込みが完了したのでフラグを変更
-      //     barGraphAnimating = false;
-      //     console.log(barGraphAnimating)
-      //   }
-      // } else {
-      //   // 初回以外の読み込み時
-      //   barGraphAnimating = true
-      //   console.log(barGraphAnimating)
-      //   currentAGroupHeight += (targetAGroupHeight - currentAGroupHeight) * lerpRate;
-      //   currentBGroupHeight += (targetBGroupHeight - currentBGroupHeight) * lerpRate;
-
-      //   if (((currentAGroupHeight < targetAGroupHeight * 1.05 && currentAGroupHeight > targetAGroupHeight * 0.95) &&
-      //     (currentBGroupHeight < targetBGroupHeight * 1.05 && currentBGroupHeight > targetBGroupHeight * 0.95)) ||
-      //     ((targetAGroupHeight === 0 && currentAGroupHeight < 0.9) &&
-      //       (targetBGroupHeight === 0 && currentBGroupHeight < 0.9))) {
-      //     // console.log(currentAGroupHeight, targetAGroupHeight)
-      //     barGraphAnimating = false;
-      //     console.log(barGraphAnimating)
-      //     // console.log("動作確認")
-
-      //   };
-      // }
-
-
       // Aグループのバーグラフのテクスチャを設定
       let patternA = ctx.createPattern(imageA, 'repeat');
       ctx.fillStyle = patternA;
@@ -647,11 +617,9 @@
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
       drawBarGraph(AGroupPercentage, BGroupPercentage);
-      // console.log("動作確認")
+
       console.log('barGraph', barGraphAnimating)
-      // console.log("test")
-      // animateAllStamps()
-      // console.log("barGraphAnimating", barGraphAnimating)
+
 
       stamps.forEach(movingStamp);
 
@@ -660,27 +628,10 @@
       const animatingStamps = stamps.filter(stamp => stamp.isAnimating);
 
       if (animatingStamps.length > 0 || barGraphAnimating) {
-
         requestAnimationFrame(animate);
       } else {
         animationCallActive = false;
       }
-      // 少なくとも一つのスタンプがアニメーション中であれば、アニメーションを継続
-      // const animatingStamps = stamps.filter(stamp => stamp.isAnimating);
-      // console.log("動くスタンプ", animatingStamps.length);
-
-      // if ((animatingStamps.length > 0)) {
-      //   requestAnimationFrame(animate);
-      //   // console.log(barGraphAnimating);
-      // } else {
-      //   animationCallActive = false;
-      // }
-
-      // if (barGraphAnimating) {
-      //   requestAnimationFrame(animate);
-      // }
-
-
 
     };
 
